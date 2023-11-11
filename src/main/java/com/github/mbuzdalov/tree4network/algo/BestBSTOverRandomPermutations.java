@@ -1,4 +1,6 @@
-package com.github.mbuzdalov.tree4network;
+package com.github.mbuzdalov.tree4network.algo;
+
+import com.github.mbuzdalov.tree4network.Graph;
 
 import java.util.concurrent.ThreadLocalRandom;
 
