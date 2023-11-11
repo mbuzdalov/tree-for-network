@@ -6,16 +6,14 @@ import org.junit.Test;
 public class GraphBuilderTests {
     @Test
     public void zeroVertices() {
-        GraphBuilder builder = new GraphBuilder();
-        Graph g = builder.result();
+        Graph g = new GraphBuilder().result();
         Assert.assertEquals(0, g.nVertices());
     }
 
     @Test
     public void singleEdge() {
-        GraphBuilder builder = new GraphBuilder();
-        builder.addEdge(0, 1, 239);
-        Graph g = builder.result();
+        Graph g = new GraphBuilder().addEdge(0, 1, 239) .result();
+
         Assert.assertEquals(2, g.nVertices());
         Assert.assertEquals(1, g.nAdjacentVertices(0));
         Assert.assertEquals(1, g.nAdjacentVertices(1));

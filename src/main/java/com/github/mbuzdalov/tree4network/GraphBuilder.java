@@ -8,7 +8,7 @@ public final class GraphBuilder {
 
     private final List<EdgeEnd> lastEnds = new ArrayList<>();
 
-    public void addEdge(int v1, int v2, int weight) {
+    public GraphBuilder addEdge(int v1, int v2, int weight) {
         if (v1 == v2) {
             throw new IllegalArgumentException("Vertex numbers coincide");
         }
@@ -21,6 +21,7 @@ public final class GraphBuilder {
         }
         lastEnds.set(v1, new EdgeEnd(v2, weight, lastEnds.get(v1)));
         lastEnds.set(v2, new EdgeEnd(v1, weight, lastEnds.get(v2)));
+        return this;
     }
 
     private static class ArrayGraph extends Graph {
