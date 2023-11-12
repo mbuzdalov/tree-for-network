@@ -3,38 +3,7 @@ package com.github.mbuzdalov.tree4network;
 import java.util.Arrays;
 
 public final class Util {
-    public static boolean isTree(Graph g) {
-        // a graph is a tree if it has V-1 edges and is connected
-        int v = g.nVertices();
-        int nEdges = 0;
-        for (int i = 0; i < v; ++i) {
-            nEdges += g.nAdjacentVertices(i);
-        }
-        if (nEdges != 2 * (v - 1)) {
-            return false;
-        }
-        boolean[] visited = new boolean[v];
-        int[] stack = new int[v];
-        int size = 1;
-        visited[0] = true;
-        int nVisited = 1;
-        while (size > 0) {
-            int curr = stack[--size];
-            int nAdj = g.nAdjacentVertices(curr);
-            for (int i = 0; i < nAdj; ++i) {
-                int next = g.getDestination(curr, i);
-                if (!visited[next]) {
-                    visited[next] = true;
-                    ++nVisited;
-                    stack[size] = next;
-                    ++size;
-                }
-            }
-        }
-        return nVisited == v;
-    }
-
-    public static long computeCost(Graph weights, Graph tree) {
+    public static long computeCost(Graph weights, BoundedForest tree) {
         if (weights.nVertices() != tree.nVertices()) {
             throw new IllegalArgumentException("Graph sizes do not match");
         }
@@ -52,7 +21,7 @@ public final class Util {
             while (head > tail) {
                 int curr = queue[tail++];
                 int nextDist = distArray[curr] + 1;
-                int nAdj = tree.nAdjacentVertices(curr);
+                int nAdj = tree.degree(curr);
                 for (int i = 0; i < nAdj; ++i) {
                     int next = tree.getDestination(curr, i);
                     if (distArray[next] > nextDist) {

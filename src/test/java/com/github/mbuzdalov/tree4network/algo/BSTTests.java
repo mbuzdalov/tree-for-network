@@ -1,5 +1,6 @@
 package com.github.mbuzdalov.tree4network.algo;
 
+import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.GraphBuilder;
 import com.github.mbuzdalov.tree4network.Util;
@@ -11,8 +12,7 @@ public class BSTTests {
         BestTreeAlgorithm.Result result = solver.construct(g, order, () -> false);
         Assert.assertNotNull(result);
         Assert.assertEquals(expected, result.cost());
-        Graph tree = result.tree();
-        Assert.assertTrue(Util.isTree(tree));
+        BoundedForest tree = result.tree();
         Assert.assertEquals(expected, Util.computeCost(g, tree));
     }
 
@@ -30,19 +30,15 @@ public class BSTTests {
         Assert.assertEquals(20, fwd.cost());
         Assert.assertEquals(20, bwd.cost());
 
-        Assert.assertEquals(1, fwd.tree().nAdjacentVertices(0));
+        Assert.assertEquals(1, fwd.tree().degree(0));
         Assert.assertEquals(1, fwd.tree().getDestination(0, 0));
-        Assert.assertEquals(1, fwd.tree().getWeight(0, 0));
-        Assert.assertEquals(1, fwd.tree().nAdjacentVertices(1));
+        Assert.assertEquals(1, fwd.tree().degree(1));
         Assert.assertEquals(0, fwd.tree().getDestination(1, 0));
-        Assert.assertEquals(1, fwd.tree().getWeight(1, 0));
 
-        Assert.assertEquals(1, bwd.tree().nAdjacentVertices(0));
+        Assert.assertEquals(1, bwd.tree().degree(0));
         Assert.assertEquals(1, bwd.tree().getDestination(0, 0));
-        Assert.assertEquals(1, bwd.tree().getWeight(0, 0));
-        Assert.assertEquals(1, bwd.tree().nAdjacentVertices(1));
+        Assert.assertEquals(1, bwd.tree().degree(1));
         Assert.assertEquals(0, bwd.tree().getDestination(1, 0));
-        Assert.assertEquals(1, bwd.tree().getWeight(1, 0));
     }
 
     @Test

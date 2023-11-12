@@ -1,7 +1,7 @@
 package com.github.mbuzdalov.tree4network.algo;
 
+import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
-import com.github.mbuzdalov.tree4network.GraphBuilder;
 import com.github.mbuzdalov.tree4network.Util;
 import com.github.mbuzdalov.tree4network.util.DisjointSet;
 
@@ -73,8 +73,7 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
                 shuffle(edges, random);
             }
             Arrays.fill(degree, 0);
-            GraphBuilder treeBuilder = new GraphBuilder();
-            int nAddedEdges = 0;
+            BoundedForest tree = new BoundedForest(n);
             ds.reset();
             // first, try adding the existing edges
             for (int i = 0; i < nEdges; ++i) {
@@ -85,24 +84,21 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
                     ++degree[src];
                     ++degree[dst];
                     ds.unite(src, dst);
-                    treeBuilder.addEdge(src, dst, 1);
-                    ++nAddedEdges;
+                    tree.addEdge(src, dst);
                 }
             }
             // if they are not enough, add random connectors
             // this is too random but might work
-            while (nAddedEdges + 1 < n) {
+            while (tree.nEdges() + 1 < n) {
                 int a = random.nextInt(n);
                 int b = random.nextInt(n);
                 if (degree[a] < 3 && degree[b] < 3 && ds.get(a) != ds.get(b)) {
                     ++degree[a];
                     ++degree[b];
                     ds.unite(a, b);
-                    treeBuilder.addEdge(a, b, 1);
-                    ++nAddedEdges;
+                    tree.addEdge(a, b);
                 }
             }
-            Graph tree = treeBuilder.result();
             long treeCost = Util.computeCost(weights, tree);
             if (bestResult == null || bestResult.cost() > treeCost) {
                 bestResult = new Result(treeCost, tree);

@@ -1,7 +1,7 @@
 package com.github.mbuzdalov.tree4network.algo;
 
+import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
-import com.github.mbuzdalov.tree4network.GraphBuilder;
 
 import java.util.Arrays;
 import java.util.function.BooleanSupplier;
@@ -76,15 +76,15 @@ public final class BestBSTOverPermutation {
         return false;
     }
 
-    private static void reconstruct(int[][] roots, int[] order, int l, int r, GraphBuilder builder) {
+    private static void reconstruct(int[][] roots, int[] order, int l, int r, BoundedForest tree) {
         int m = roots[r][l];
         if (l < m) {
-            reconstruct(roots, order, l, m - 1, builder);
-            builder.addEdge(order[m], order[roots[m - 1][l]], 1);
+            reconstruct(roots, order, l, m - 1, tree);
+            tree.addEdge(order[m], order[roots[m - 1][l]]);
         }
         if (m < r) {
-            reconstruct(roots, order, m + 1, r, builder);
-            builder.addEdge(order[m], order[roots[r][m + 1]], 1);
+            reconstruct(roots, order, m + 1, r, tree);
+            tree.addEdge(order[m], order[roots[r][m + 1]]);
         }
     }
 
@@ -131,8 +131,8 @@ public final class BestBSTOverPermutation {
             }
         }
 
-        GraphBuilder builder = new GraphBuilder();
-        reconstruct(roots, order, 0, n - 1, builder);
-        return new BestTreeAlgorithm.Result(costs[n - 1][0], builder.result());
+        BoundedForest forest = new BoundedForest(n);
+        reconstruct(roots, order, 0, n - 1, forest);
+        return new BestTreeAlgorithm.Result(costs[n - 1][0], forest);
     }
 }
