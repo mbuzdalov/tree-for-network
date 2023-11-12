@@ -7,13 +7,14 @@ public final class Util {
         if (weights.nVertices() != tree.nVertices()) {
             throw new IllegalArgumentException("Graph sizes do not match");
         }
-        int n = weights.nVertices();
+
         // This is slow, need something faster
-        int[][] treeDist = new int[n][n];
+        int n = weights.nVertices();
+        int[] distArray = new int[n];
         int[] queue = new int[n];
 
+        long result = 0;
         for (int src = 0; src < n; ++src) {
-            int[] distArray = treeDist[src];
             Arrays.fill(distArray, n);
             distArray[src] = 0;
             int head = 0, tail = 0;
@@ -30,14 +31,11 @@ public final class Util {
                     }
                 }
             }
-        }
 
-        long result = 0;
-        for (int src = 0; src < n; ++src) {
             int nAdj = weights.degree(src);
             for (int i = 0; i < nAdj; ++i) {
                 int dst = weights.getDestination(src, i);
-                result += (long) (weights.getWeight(src, i)) * treeDist[src][dst];
+                result += (long) (weights.getWeight(src, i)) * distArray[dst];
             }
         }
 
