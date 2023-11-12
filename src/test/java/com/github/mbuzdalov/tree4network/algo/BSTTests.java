@@ -8,7 +8,8 @@ import org.junit.Test;
 
 public class BSTTests {
     private void test(BestBSTOverPermutation solver, Graph g, long expected, int... order) {
-        BestTreeAlgorithm.Result result = solver.construct(g, order);
+        BestTreeAlgorithm.Result result = solver.construct(g, order, () -> false);
+        Assert.assertNotNull(result);
         Assert.assertEquals(expected, result.cost());
         Graph tree = result.tree();
         Assert.assertTrue(Util.isTree(tree));
@@ -21,9 +22,11 @@ public class BSTTests {
         Graph graph = new GraphBuilder()
                 .addEdge(0, 1, 20)
                 .result();
-        BestTreeAlgorithm.Result fwd = solver.construct(graph, new int[] {0, 1});
-        BestTreeAlgorithm.Result bwd = solver.construct(graph, new int[] {0, 1});
+        BestTreeAlgorithm.Result fwd = solver.construct(graph, new int[] {0, 1}, () -> false);
+        BestTreeAlgorithm.Result bwd = solver.construct(graph, new int[] {0, 1}, () -> false);
 
+        Assert.assertNotNull(fwd);
+        Assert.assertNotNull(bwd);
         Assert.assertEquals(20, fwd.cost());
         Assert.assertEquals(20, bwd.cost());
 

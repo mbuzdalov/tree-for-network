@@ -4,6 +4,7 @@ import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.GraphBuilder;
 
 import java.util.Arrays;
+import java.util.function.BooleanSupplier;
 
 public final class BestBSTOverPermutation {
     private final int[][] weightMatrix;
@@ -53,8 +54,15 @@ public final class BestBSTOverPermutation {
         return sum;
     }
 
-    private void fillWeightsOut(int n) {
+    private boolean fillWeightsOut(int n, BooleanSupplier timerInterrupt) {
+        int perfCounter = 0;
         for (int r = 0; r < n; ++r) {
+            if (perfCounter > 1000000) {
+                perfCounter = 0;
+                if (timerInterrupt.getAsBoolean()) {
+                    return true;
+                }
+            }
             weightsOut[r] = new long[r + 1];
             long sum = 0;
             for (int l = r; l >= 0; --l) {
@@ -62,8 +70,10 @@ public final class BestBSTOverPermutation {
                 sum -= sum(weightMatrix[l], l + 1, r + 1);
                 sum += sum(weightMatrix[l], r + 1, n);
                 weightsOut[r][l] = sum;
+                perfCounter += n;
             }
         }
+        return false;
     }
 
     private static void reconstruct(int[][] roots, int[] order, int l, int r, GraphBuilder builder) {
@@ -78,7 +88,7 @@ public final class BestBSTOverPermutation {
         }
     }
 
-    public BestTreeAlgorithm.Result construct(Graph weights, int[] order) {
+    public BestTreeAlgorithm.Result construct(Graph weights, int[] order, BooleanSupplier timerInterrupt) {
         if (weights.nVertices() != order.length) {
             throw new IllegalArgumentException("Graph size and order array size do not match");
         }
@@ -87,9 +97,18 @@ public final class BestBSTOverPermutation {
             throw new IllegalArgumentException("Graph size is too big (" + n + " vs " + weightMatrix.length + ")");
         }
         fillWeightMatrix(weights, order);
-        fillWeightsOut(n);
+        if (fillWeightsOut(n, timerInterrupt)) {
+            return null;
+        }
 
+        int perfCounter = 0;
         for (int span = 1; span < n; ++span) {
+            if (perfCounter > 1000000) {
+                perfCounter = 0;
+                if (timerInterrupt.getAsBoolean()) {
+                    return null;
+                }
+            }
             for (int r = span; r < n; ++r) {
                 int l = r - span;
 
@@ -105,6 +124,7 @@ public final class BestBSTOverPermutation {
                         root = m;
                     }
                 }
+                perfCounter += span + 1;
 
                 roots[r][l] = root;
                 costs[r][l] = cost;
