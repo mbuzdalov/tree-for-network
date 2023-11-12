@@ -6,6 +6,11 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public final class BestBSTOverRandomPermutations implements BestTreeAlgorithm {
     @Override
+    public String getName() {
+        return "Best BST over random permutations";
+    }
+
+    @Override
     public Result construct(Graph weights, long timeLimitMillis) {
         long timeStartMillis = System.currentTimeMillis();
         ThreadLocalRandom random = ThreadLocalRandom.current();
