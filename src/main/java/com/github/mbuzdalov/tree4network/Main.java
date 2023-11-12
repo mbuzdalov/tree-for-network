@@ -1,6 +1,7 @@
 package com.github.mbuzdalov.tree4network;
 
 import com.github.mbuzdalov.tree4network.algo.BestBSTOverRandomPermutations;
+import com.github.mbuzdalov.tree4network.algo.BestMSTOverEdgeShuffle;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
 
@@ -10,7 +11,8 @@ import java.util.List;
 
 public class Main {
     private static final List<BestTreeAlgorithm> algorithms = List.of(
-            new BestBSTOverRandomPermutations()
+            new BestBSTOverRandomPermutations(),
+            new BestMSTOverEdgeShuffle()
     );
 
     public static void main(String[] args) throws IOException {
@@ -34,6 +36,9 @@ public class Main {
                 long t0 = System.currentTimeMillis();
                 BestTreeAlgorithm.Result result = algo.construct(graph, timeLimitMillis);
                 if (result != null) {
+                    if (Util.computeCost(graph, result.tree()) != result.cost()) {
+                        throw new AssertionError("Independent cost computation failed");
+                    }
                     System.out.println("  " + algo.getName() + ": " + result.cost() + " in " + (System.currentTimeMillis() - t0) + " milliseconds");
                 } else {
                     System.out.println("  " + algo.getName() + ": interrupted");
