@@ -22,6 +22,7 @@ public final class BestBSTOverRandomPermutations implements BestTreeAlgorithm {
 
         BooleanSupplier timerInterrupt = () -> System.currentTimeMillis() - timeStartMillis > timeLimitMillis;
 
+        int nQueriesCompleted = 0;
         do {
             vertexOrder[0] = 0;
             for (int i = 1; i < n; ++i) {
@@ -33,11 +34,13 @@ public final class BestBSTOverRandomPermutations implements BestTreeAlgorithm {
             if (currResult == null) {
                 break;
             }
+            ++nQueriesCompleted;
             if (bestResult == null || bestResult.cost() > currResult.cost()) {
                 bestResult = currResult;
             }
         } while (System.currentTimeMillis() - timeStartMillis < timeLimitMillis);
 
+        System.out.println("  [debug] completed queries: " + nQueriesCompleted);
         return bestResult;
     }
 }

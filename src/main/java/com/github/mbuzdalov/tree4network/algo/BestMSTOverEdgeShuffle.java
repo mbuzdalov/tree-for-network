@@ -68,6 +68,7 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
         }
         Arrays.sort(edges);
 
+        int nCompletedQueries = 0;
         do {
             if (bestResult != null) {
                 shuffle(edges, random);
@@ -103,7 +104,9 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
             if (bestResult == null || bestResult.cost() > treeCost) {
                 bestResult = new Result(treeCost, tree);
             }
+            ++nCompletedQueries;
         } while (System.currentTimeMillis() - startTimeMillis < timeLimitMillis);
+        System.out.println("  [debug] completed queries: " + nCompletedQueries);
         return bestResult;
     }
 }
