@@ -15,8 +15,8 @@ public class GraphBuilderTests {
         Graph g = new GraphBuilder().addEdge(0, 1, 239) .result();
 
         Assert.assertEquals(2, g.nVertices());
-        Assert.assertEquals(1, g.nAdjacentVertices(0));
-        Assert.assertEquals(1, g.nAdjacentVertices(1));
+        Assert.assertEquals(1, g.degree(0));
+        Assert.assertEquals(1, g.degree(1));
         Assert.assertEquals(1, g.getDestination(0, 0));
         Assert.assertEquals(239, g.getWeight(0, 0));
         Assert.assertEquals(0, g.getDestination(1, 0));

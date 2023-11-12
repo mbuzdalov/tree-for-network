@@ -29,7 +29,7 @@ public class Main {
             Graph graph = GraphFromCSV.fromGZippedFile(test);
             int nEdges = 0;
             for (int i = 0; i < graph.nVertices(); ++i) {
-                nEdges += graph.nAdjacentVertices(i);
+                nEdges += graph.degree(i);
             }
             System.out.println("  Graph has " + graph.nVertices() + " vertices and " + (nEdges / 2) + " edges");
             for (BestTreeAlgorithm algo : algorithms) {

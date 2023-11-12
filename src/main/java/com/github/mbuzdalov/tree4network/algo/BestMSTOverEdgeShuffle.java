@@ -51,13 +51,13 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
         BestTreeAlgorithm.Result bestResult = null;
         int nEdges = 0;
         for (int i = 0; i < n; ++i) {
-            nEdges += weights.nAdjacentVertices(i);
+            nEdges += weights.degree(i);
         }
         nEdges /= 2;
         int[] degree = new int[n];
         Edge[] edges = new Edge[nEdges];
         for (int i = 0, e = 0; i < n; ++i) {
-            int nAdj = weights.nAdjacentVertices(i);
+            int nAdj = weights.degree(i);
             for (int j = 0; j < nAdj; ++j) {
                 int t = weights.getDestination(i, j);
                 if (i < t) {

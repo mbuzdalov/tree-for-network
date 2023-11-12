@@ -37,7 +37,7 @@ public final class BestBSTOverPermutation {
         for (int i = 0; i < n; ++i) {
             int pi = inverse[i];
             Arrays.fill(weightMatrix[pi], 0, n, 0);
-            int nAdj = weights.nAdjacentVertices(i);
+            int nAdj = weights.degree(i);
             for (int j = 0; j < nAdj; ++j) {
                 int t = weights.getDestination(i, j);
                 int pt = inverse[t];

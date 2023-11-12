@@ -36,7 +36,7 @@ public final class GraphBuilder {
         }
 
         @Override
-        public int nAdjacentVertices(int vertex) {
+        public int degree(int vertex) {
             return data[vertex].length >>> 1;
         }
 

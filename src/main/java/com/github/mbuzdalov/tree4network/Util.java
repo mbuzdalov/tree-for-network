@@ -34,7 +34,7 @@ public final class Util {
 
         long result = 0;
         for (int src = 0; src < n; ++src) {
-            int nAdj = weights.nAdjacentVertices(src);
+            int nAdj = weights.degree(src);
             for (int i = 0; i < nAdj; ++i) {
                 int dst = weights.getDestination(src, i);
                 result += (long) (weights.getWeight(src, i)) * treeDist[src][dst];
