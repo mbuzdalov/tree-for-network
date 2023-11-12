@@ -36,12 +36,12 @@ public class Main {
                 long t0 = System.currentTimeMillis();
                 BestTreeAlgorithm.Result result = algo.construct(graph, timeLimitMillis);
                 if (result != null) {
+                    System.out.println("  " + algo.getName() + ": " + result.cost() + " in " + (System.currentTimeMillis() - t0) + " milliseconds");
                     if (Util.computeCost(graph, result.tree()) != result.cost()) {
                         throw new AssertionError("Independent cost computation failed");
                     }
-                    System.out.println("  " + algo.getName() + ": " + result.cost() + " in " + (System.currentTimeMillis() - t0) + " milliseconds");
                 } else {
-                    System.out.println("  " + algo.getName() + ": interrupted");
+                    System.out.println("  " + algo.getName() + ": interrupted after " + (System.currentTimeMillis() - t0) + " milliseconds");
                 }
             }
         }
