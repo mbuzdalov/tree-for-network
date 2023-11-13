@@ -4,6 +4,7 @@ import com.github.mbuzdalov.tree4network.algo.*;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
+import com.github.mbuzdalov.tree4network.mut.EdgeRelinkMutation;
 import com.github.mbuzdalov.tree4network.mut.EdgeSwitchMutation;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
@@ -17,7 +18,9 @@ public class Main {
             new BestBSTOverRandomPermutations(),
             new BestBSTOverAllPermutations(),
             new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeSwitchMutation.getInstance()),
-            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance())
+            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance()),
+            new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeRelinkMutation.getInstance()),
+            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeRelinkMutation.getInstance())
     );
 
     public static void main(String[] args) throws IOException {
