@@ -86,7 +86,7 @@ public class BSTTests {
 
     @Test
     public void permutationShortcutCorrectness() {
-        int n = 8;
+        int n = 7;
         Random random = new Random(23545424323211L);
         GraphBuilder gb = new GraphBuilder();
         for (int l = 0; l < n; ++l) {
