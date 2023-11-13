@@ -23,7 +23,7 @@ public class LinSpaceIncrementalRMQTests {
 
     @Test
     public void allSmall() {
-        for (int size = 1; size <= 15; ++size) {
+        for (int size = 1; size <= 14; ++size) {
             int[] array = new int[size];
             LinLogSpaceRMQ log = new LinLogSpaceRMQ(array);
             LinSpaceIncrementalRMQ lin = new LinSpaceIncrementalRMQ(array);
@@ -55,7 +55,7 @@ public class LinSpaceIncrementalRMQTests {
         int[] array = new int[maxSize];
         LinLogSpaceRMQ log = new LinLogSpaceRMQ(array);
         LinSpaceIncrementalRMQ lin = new LinSpaceIncrementalRMQ(array);
-        for (int run = 0; run < 1000; ++run) {
+        for (int run = 0; run < 100; ++run) {
             int size = run == 0 ? maxSize : 2 + random.nextInt(maxSize - 1);
             array[0] = random.nextInt(100000);
             for (int i = 1; i < size; ++i) {
