@@ -23,6 +23,13 @@ public final class RMQCostComputationAlgorithm extends CostComputationAlgorithm 
 
     @Override
     public long compute(Graph weights, BoundedForest tree) {
+        if (weights.nVertices() != tree.nVertices()) {
+            throw new IllegalArgumentException("Graph sizes do not match");
+        }
+        if (weights.nVertices() > vertexIndices.length) {
+            throw new IllegalArgumentException("Graph is too large");
+        }
+
         this.tree = tree;
         depthArrayIndex = 0;
         depth = 0;

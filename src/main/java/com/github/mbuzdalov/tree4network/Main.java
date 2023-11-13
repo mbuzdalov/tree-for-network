@@ -3,6 +3,8 @@ package com.github.mbuzdalov.tree4network;
 import com.github.mbuzdalov.tree4network.algo.BestBSTOverRandomPermutations;
 import com.github.mbuzdalov.tree4network.algo.BestMSTOverEdgeShuffle;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
+import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
+import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
 
 import java.io.File;
@@ -31,13 +33,14 @@ public class Main {
             for (int i = 0; i < graph.nVertices(); ++i) {
                 nEdges += graph.degree(i);
             }
+            CostComputationAlgorithm cost = new DefaultCostComputationAlgorithm(graph.nVertices());
             System.out.println("  Graph has " + graph.nVertices() + " vertices and " + (nEdges / 2) + " edges");
             for (BestTreeAlgorithm algo : algorithms) {
                 long t0 = System.currentTimeMillis();
                 BestTreeAlgorithm.Result result = algo.construct(graph, timeLimitMillis);
                 if (result != null) {
                     System.out.println("  " + algo.getName() + ": " + result.cost() + " in " + (System.currentTimeMillis() - t0) + " milliseconds");
-                    if (Util.computeCost(graph, result.tree()) != result.cost()) {
+                    if (cost.compute(graph, result.tree()) != result.cost()) {
                         throw new AssertionError("Independent cost computation failed");
                     }
                 } else {

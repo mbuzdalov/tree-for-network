@@ -2,7 +2,8 @@ package com.github.mbuzdalov.tree4network.algo;
 
 import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
-import com.github.mbuzdalov.tree4network.Util;
+import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
+import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.util.DisjointSet;
 
 import java.util.Arrays;
@@ -68,6 +69,8 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
         }
         Arrays.sort(edges);
 
+        CostComputationAlgorithm cost = new DefaultCostComputationAlgorithm(n);
+
         int nCompletedQueries = 0;
         do {
             if (bestResult != null) {
@@ -100,7 +103,7 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
                     tree.addEdge(a, b);
                 }
             }
-            long treeCost = Util.computeCost(weights, tree);
+            long treeCost = cost.compute(weights, tree);
             if (bestResult == null || bestResult.cost() > treeCost) {
                 bestResult = new Result(treeCost, tree);
             }
