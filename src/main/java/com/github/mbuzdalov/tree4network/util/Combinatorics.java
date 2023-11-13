@@ -1,9 +1,6 @@
 package com.github.mbuzdalov.tree4network.util;
 
-import com.github.mbuzdalov.tree4network.algo.BestMSTOverEdgeShuffle;
-
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 public final class Combinatorics {
     private Combinatorics() {}
