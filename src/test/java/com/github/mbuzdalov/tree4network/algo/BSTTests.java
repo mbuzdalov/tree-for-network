@@ -4,12 +4,15 @@ import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.GraphBuilder;
 import com.github.mbuzdalov.tree4network.cost.NaiveCostComputationAlgorithm;
+import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Random;
+
 public class BSTTests {
     private void test(BestBSTOverPermutation solver, Graph g, long expected, int... order) {
-        BestTreeAlgorithm.Result result = solver.construct(g, order, () -> false);
+        BestTreeAlgorithm.Result result = solver.construct(g, order, 0, () -> false);
         Assert.assertNotNull(result);
         Assert.assertEquals(expected, result.cost());
         BoundedForest tree = result.tree();
@@ -22,8 +25,8 @@ public class BSTTests {
         Graph graph = new GraphBuilder()
                 .addEdge(0, 1, 20)
                 .result();
-        BestTreeAlgorithm.Result fwd = solver.construct(graph, new int[] {0, 1}, () -> false);
-        BestTreeAlgorithm.Result bwd = solver.construct(graph, new int[] {0, 1}, () -> false);
+        BestTreeAlgorithm.Result fwd = solver.construct(graph, new int[] {0, 1}, 0, () -> false);
+        BestTreeAlgorithm.Result bwd = solver.construct(graph, new int[] {0, 1}, 0, () -> false);
 
         Assert.assertNotNull(fwd);
         Assert.assertNotNull(bwd);
@@ -79,5 +82,35 @@ public class BSTTests {
         test(solver, g1, 46,   1, 3, 0, 2);  test(solver, g1, 46,   2, 0, 3, 1);
         test(solver, g1, 50,   2, 0, 1, 3);  test(solver, g1, 50,   3, 1, 0, 2);
         test(solver, g1, 50,   2, 1, 0, 3);  test(solver, g1, 50,   3, 0, 1, 2);
+    }
+
+    @Test
+    public void permutationShortcutCorrectness() {
+        int n = 8;
+        Random random = new Random(23545424323211L);
+        GraphBuilder gb = new GraphBuilder();
+        for (int l = 0; l < n; ++l) {
+            for (int r = l + 1; r < n; ++r) {
+                gb.addEdge(l, r, random.nextInt(10000));
+            }
+        }
+        Graph g = gb.result();
+
+        BestBSTOverPermutation solver1 = new BestBSTOverPermutation(8);
+        BestBSTOverPermutation solver2 = new BestBSTOverPermutation(8);
+
+        int[] permutation = new int[n];
+        for (int i = 0; i < n; ++i) {
+            permutation[i] = i;
+        }
+
+        int minChanged = 0;
+        do {
+            BestTreeAlgorithm.Result r1 = solver1.construct(g, permutation, 0, () -> false);
+            BestTreeAlgorithm.Result r2 = solver2.construct(g, permutation, minChanged, () -> false);
+            Assert.assertNotNull(r1);
+            Assert.assertNotNull(r2);
+            Assert.assertEquals(r1.cost(), r2.cost());
+        } while ((minChanged = Combinatorics.nextPermutation(permutation)) >= 0);
     }
 }

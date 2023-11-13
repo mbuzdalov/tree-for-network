@@ -54,9 +54,9 @@ public final class BestBSTOverPermutation {
         return sum;
     }
 
-    private boolean fillWeightsOut(int n, BooleanSupplier timerInterrupt) {
+    private boolean fillWeightsOut(int n, int minChanged, BooleanSupplier timerInterrupt) {
         int perfCounter = 0;
-        for (int r = 0; r < n; ++r) {
+        for (int r = minChanged; r < n; ++r) {
             if (perfCounter > 1000000) {
                 perfCounter = 0;
                 if (timerInterrupt.getAsBoolean()) {
@@ -88,7 +88,7 @@ public final class BestBSTOverPermutation {
         }
     }
 
-    public BestTreeAlgorithm.Result construct(Graph weights, int[] order, BooleanSupplier timerInterrupt) {
+    public BestTreeAlgorithm.Result construct(Graph weights, int[] order, int minChanged, BooleanSupplier timerInterrupt) {
         if (weights.nVertices() != order.length) {
             throw new IllegalArgumentException("Graph size and order array size do not match");
         }
@@ -97,7 +97,7 @@ public final class BestBSTOverPermutation {
             throw new IllegalArgumentException("Graph size is too big (" + n + " vs " + weightMatrix.length + ")");
         }
         fillWeightMatrix(weights, order);
-        if (fillWeightsOut(n, timerInterrupt)) {
+        if (fillWeightsOut(n, minChanged, timerInterrupt)) {
             return null;
         }
 
@@ -109,7 +109,7 @@ public final class BestBSTOverPermutation {
                     return null;
                 }
             }
-            for (int r = span; r < n; ++r) {
+            for (int r = Math.max(minChanged, span); r < n; ++r) {
                 int l = r - span;
 
                 int root = -1;
