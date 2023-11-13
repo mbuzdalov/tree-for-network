@@ -6,6 +6,7 @@ public final class LinSpaceIncrementalRMQ extends RangeMinimumQuery {
     private final int[][] blockPrecomputed;
     private final int[] blockMinValues, blockMinIndices;
     private final int[] blockBitStrings;
+    private final int[] blockPrefixes, blockSuffixes;
     private final LinLogSpaceRMQ blockRMQ;
 
     public LinSpaceIncrementalRMQ(int[] values) {
@@ -20,6 +21,9 @@ public final class LinSpaceIncrementalRMQ extends RangeMinimumQuery {
         blockMinIndices = new int[nBlocks];
         blockBitStrings = new int[nBlocks];
         blockRMQ = new LinLogSpaceRMQ(blockMinValues);
+
+        blockPrefixes = new int[values.length];
+        blockSuffixes = new int[values.length];
 
         // blockPrecomputed[i] describes solutions for all blocks of size 2 + i
         blockPrecomputed = new int[blockSize - 1][];
@@ -62,20 +66,36 @@ public final class LinSpaceIncrementalRMQ extends RangeMinimumQuery {
             int stringEncoding = 0;
             int minValue = values[blockBegin];
             int minIndex = blockBegin;
+
+            blockPrefixes[blockBegin] = blockBegin;
             for (int i = blockBegin + 1; i < blockEnd; ++i) {
                 int curr = values[i];
                 if (minValue > curr) {
                     minValue = curr;
                     minIndex = i;
                 }
+                blockPrefixes[i] = minIndex;
                 int prev = values[i - 1];
                 if (prev + 1 == curr) {
                     stringEncoding |= 1 << (i - 1 - blockBegin);
                 }
             }
+
             blockMinIndices[block] = minIndex;
             blockMinValues[block] = minValue;
             blockBitStrings[block] = stringEncoding;
+
+            int sfIndex = blockEnd - 1;
+            int sfValue = values[sfIndex];
+            blockSuffixes[sfIndex] = sfIndex;
+            for (int i = sfIndex - 1; i >= blockBegin; --i) {
+                int curr = values[i];
+                if (sfValue > curr) {
+                    sfValue = curr;
+                    sfIndex = i;
+                }
+                blockSuffixes[i] = sfIndex;
+            }
         }
         // Reload the block RMQ
         blockRMQ.reloadArray(nBlocks);
@@ -95,16 +115,8 @@ public final class LinSpaceIncrementalRMQ extends RangeMinimumQuery {
             mask &= (1 << (to - from)) - 1;
             return from + blockPrecomputed[to - from - 1][mask];
         } else {
-            int fromLocalIndex = from - fromBlock * blockSize;
-            int fromIndex = blockSize - fromLocalIndex == 1
-                ? from
-                : from + blockPrecomputed[blockSize - fromLocalIndex - 2][blockBitStrings[fromBlock] >>> fromLocalIndex];
-
-            int toLocalIndex = to - toBlock * blockSize;
-            int toIndex = toLocalIndex == 0
-                ? to
-                : toBlock * blockSize + blockPrecomputed[toLocalIndex - 1][blockBitStrings[toBlock] & ((1 << toLocalIndex) - 1)];
-
+            int fromIndex = blockSuffixes[from];
+            int toIndex = blockPrefixes[to];
             int bestIndex = values[fromIndex] <= values[toIndex] ? fromIndex : toIndex;
             if (fromBlock + 1 < toBlock) {
                 int midBlock = blockRMQ.minimumIndex(fromBlock + 1, toBlock);
