@@ -16,8 +16,8 @@ public class Main {
             new BestMSTOverEdgeShuffle(),
             new BestBSTOverRandomPermutations(),
             new BestBSTOverAllPermutations(),
-            new SimpleLocalSearch(new BestMSTOverEdgeShuffle(), EdgeSwitchMutation.getInstance()),
-            new SimpleLocalSearch(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance())
+            new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeSwitchMutation.getInstance()),
+            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance())
     );
 
     public static void main(String[] args) throws IOException {
