@@ -1,12 +1,10 @@
 package com.github.mbuzdalov.tree4network;
 
-import com.github.mbuzdalov.tree4network.algo.BestBSTOverAllPermutations;
-import com.github.mbuzdalov.tree4network.algo.BestBSTOverRandomPermutations;
-import com.github.mbuzdalov.tree4network.algo.BestMSTOverEdgeShuffle;
-import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
+import com.github.mbuzdalov.tree4network.algo.*;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
+import com.github.mbuzdalov.tree4network.mut.EdgeSwitchMutation;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
 import java.io.File;
@@ -17,7 +15,9 @@ public class Main {
     private static final List<BestTreeAlgorithm> algorithms = List.of(
             new BestMSTOverEdgeShuffle(),
             new BestBSTOverRandomPermutations(),
-            new BestBSTOverAllPermutations()
+            new BestBSTOverAllPermutations(),
+            new SimpleLocalSearch(new BestMSTOverEdgeShuffle(), EdgeSwitchMutation.getInstance()),
+            new SimpleLocalSearch(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance())
     );
 
     public static void main(String[] args) throws IOException {

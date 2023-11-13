@@ -16,6 +16,11 @@ public final class BoundedForest {
         }
     }
 
+    public BoundedForest(BoundedForest other) {
+        state = other.state.clone();
+        nEdges = other.nEdges;
+    }
+
     public int nVertices() {
         return state.length >>> 2;
     }
