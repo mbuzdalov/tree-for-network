@@ -38,13 +38,13 @@ public final class EdgeRelinkMutation implements Mutation<EdgeRelinkMutation.Con
         if (result.tree().nVertices() <= 2) {
             return null; // nothing to mutate
         }
-        BoundedForest tree = new BoundedForest(result.tree());
 
         if (context.used == 0) {
             Combinatorics.fillRandomPermutation(context.mutations, random);
         }
 
         while (true) {
+            BoundedForest tree = new BoundedForest(result.tree());
             // Choose a random edge
             int flippedEdge = context.getMutation(random);
             if (flippedEdge == -1) {
