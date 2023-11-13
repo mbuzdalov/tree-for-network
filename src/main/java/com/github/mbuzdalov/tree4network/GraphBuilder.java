@@ -26,13 +26,24 @@ public final class GraphBuilder {
 
     private static class ArrayGraph extends Graph {
         private final int[][] data;
+        private final int nEdges;
         ArrayGraph(int[][] data) {
             this.data = data;
+            int nEdges = 0;
+            for (int[] row : data) {
+                nEdges += row.length >>> 1;
+            }
+            this.nEdges = nEdges >>> 1;
         }
 
         @Override
         public int nVertices() {
             return data.length;
+        }
+
+        @Override
+        public int nEdges() {
+            return nEdges;
         }
 
         @Override
