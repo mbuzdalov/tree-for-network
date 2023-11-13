@@ -2,9 +2,9 @@ package com.github.mbuzdalov.tree4network.algo;
 
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
+import com.github.mbuzdalov.tree4network.util.Timer;
 
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.BooleanSupplier;
 
 public final class BestBSTOverRandomPermutations implements BestTreeAlgorithm {
     @Override
@@ -13,20 +13,17 @@ public final class BestBSTOverRandomPermutations implements BestTreeAlgorithm {
     }
 
     @Override
-    public Result construct(Graph weights, long timeLimitMillis) {
-        long timeStartMillis = System.currentTimeMillis();
+    public Result construct(Graph weights, Timer timer) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         int n = weights.nVertices();
         BestBSTOverPermutation solver = new BestBSTOverPermutation(n);
         BestTreeAlgorithm.Result bestResult = null;
         int[] vertexOrder = new int[n];
 
-        BooleanSupplier timerInterrupt = () -> System.currentTimeMillis() - timeStartMillis > timeLimitMillis;
-
         int nQueriesCompleted = 0;
         do {
             Combinatorics.fillRandomPermutation(vertexOrder, random);
-            BestTreeAlgorithm.Result currResult = solver.construct(weights, vertexOrder, 0, timerInterrupt);
+            BestTreeAlgorithm.Result currResult = solver.construct(weights, vertexOrder, 0, timer);
             if (currResult == null) {
                 break;
             }
@@ -34,7 +31,7 @@ public final class BestBSTOverRandomPermutations implements BestTreeAlgorithm {
             if (bestResult == null || bestResult.cost() > currResult.cost()) {
                 bestResult = currResult;
             }
-        } while (System.currentTimeMillis() - timeStartMillis < timeLimitMillis);
+        } while (!timer.shouldInterrupt());
 
         System.out.println("  [debug] completed queries: " + nQueriesCompleted);
         return bestResult;

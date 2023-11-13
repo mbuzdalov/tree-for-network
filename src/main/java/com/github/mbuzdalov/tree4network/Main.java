@@ -7,6 +7,7 @@ import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
+import com.github.mbuzdalov.tree4network.util.Timer;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,15 +39,15 @@ public class Main {
             CostComputationAlgorithm cost = new DefaultCostComputationAlgorithm(graph.nVertices());
             System.out.println("  Graph has " + graph.nVertices() + " vertices and " + (nEdges / 2) + " edges");
             for (BestTreeAlgorithm algo : algorithms) {
-                long t0 = System.currentTimeMillis();
-                BestTreeAlgorithm.Result result = algo.construct(graph, timeLimitMillis);
+                Timer timer = Timer.newFixedTimer(System.currentTimeMillis(), timeLimitMillis);
+                BestTreeAlgorithm.Result result = algo.construct(graph, timer);
                 if (result != null) {
-                    System.out.println("  " + algo.getName() + ": " + result.cost() + " in " + (System.currentTimeMillis() - t0) + " milliseconds");
+                    System.out.println("  " + algo.getName() + ": " + result.cost() + " in " + timer.timeConsumedMillis() + " milliseconds");
                     if (cost.compute(graph, result.tree()) != result.cost()) {
                         throw new AssertionError("Independent cost computation failed");
                     }
                 } else {
-                    System.out.println("  " + algo.getName() + ": interrupted after " + (System.currentTimeMillis() - t0) + " milliseconds");
+                    System.out.println("  " + algo.getName() + ": interrupted after " + timer.timeConsumedMillis() + " milliseconds");
                 }
             }
         }

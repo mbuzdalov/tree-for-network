@@ -3,9 +3,9 @@ package com.github.mbuzdalov.tree4network.algo;
 import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
+import com.github.mbuzdalov.tree4network.util.Timer;
 
 import java.util.Arrays;
-import java.util.function.BooleanSupplier;
 
 public final class BestBSTOverPermutation {
     private final int[][] weightMatrix;
@@ -53,12 +53,12 @@ public final class BestBSTOverPermutation {
         return sum;
     }
 
-    private boolean fillWeightsOut(int n, int minChanged, BooleanSupplier timerInterrupt) {
+    private boolean fillWeightsOut(int n, int minChanged, Timer timer) {
         int perfCounter = 0;
         for (int r = minChanged; r < n; ++r) {
             if (perfCounter > 1000000) {
                 perfCounter = 0;
-                if (timerInterrupt.getAsBoolean()) {
+                if (timer.shouldInterrupt()) {
                     return true;
                 }
             }
@@ -87,7 +87,7 @@ public final class BestBSTOverPermutation {
         }
     }
 
-    public BestTreeAlgorithm.Result construct(Graph weights, int[] order, int minChanged, BooleanSupplier timerInterrupt) {
+    public BestTreeAlgorithm.Result construct(Graph weights, int[] order, int minChanged, Timer timer) {
         if (weights.nVertices() != order.length) {
             throw new IllegalArgumentException("Graph size and order array size do not match");
         }
@@ -96,7 +96,7 @@ public final class BestBSTOverPermutation {
             throw new IllegalArgumentException("Graph size is too big (" + n + " vs " + weightMatrix.length + ")");
         }
         fillWeightMatrix(weights, order);
-        if (fillWeightsOut(n, minChanged, timerInterrupt)) {
+        if (fillWeightsOut(n, minChanged, timer)) {
             return null;
         }
 
@@ -104,7 +104,7 @@ public final class BestBSTOverPermutation {
         for (int span = 1; span < n; ++span) {
             if (perfCounter > 1000000) {
                 perfCounter = 0;
-                if (timerInterrupt.getAsBoolean()) {
+                if (timer.shouldInterrupt()) {
                     return null;
                 }
             }

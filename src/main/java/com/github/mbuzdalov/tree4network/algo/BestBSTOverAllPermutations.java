@@ -2,8 +2,7 @@ package com.github.mbuzdalov.tree4network.algo;
 
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
-
-import java.util.function.BooleanSupplier;
+import com.github.mbuzdalov.tree4network.util.Timer;
 
 public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
     @Override
@@ -12,13 +11,10 @@ public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
     }
 
     @Override
-    public Result construct(Graph weights, long timeLimitMillis) {
-        long timeStartMillis = System.currentTimeMillis();
+    public Result construct(Graph weights, Timer timer) {
         int n = weights.nVertices();
         BestBSTOverPermutation solver = new BestBSTOverPermutation(n);
         Result bestResult = null;
-
-        BooleanSupplier timerInterrupt = () -> System.currentTimeMillis() - timeStartMillis > timeLimitMillis;
 
         int minChanged = 0;
         int[] vertexOrder = new int[n];
@@ -31,7 +27,7 @@ public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
         do {
             minChangedSinceLastQuery = Math.min(minChangedSinceLastQuery, minChanged);
             if (vertexOrder[0] < vertexOrder[n - 1]) {
-                Result currResult = solver.construct(weights, vertexOrder, minChangedSinceLastQuery, timerInterrupt);
+                Result currResult = solver.construct(weights, vertexOrder, minChangedSinceLastQuery, timer);
                 if (currResult == null) {
                     break;
                 }
@@ -42,7 +38,7 @@ public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
                 }
             }
         } while ((minChanged = Combinatorics.nextPermutation(vertexOrder)) >= 0
-                && System.currentTimeMillis() - timeStartMillis < timeLimitMillis);
+                && !timer.shouldInterrupt());
 
         System.out.println("  [debug] completed queries: " + nQueriesCompleted);
         return bestResult;

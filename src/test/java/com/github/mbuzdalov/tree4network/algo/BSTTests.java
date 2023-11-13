@@ -5,6 +5,7 @@ import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.GraphBuilder;
 import com.github.mbuzdalov.tree4network.cost.NaiveCostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
+import com.github.mbuzdalov.tree4network.util.Timer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import java.util.Random;
 
 public class BSTTests {
     private void test(BestBSTOverPermutation solver, Graph g, long expected, int... order) {
-        BestTreeAlgorithm.Result result = solver.construct(g, order, 0, () -> false);
+        BestTreeAlgorithm.Result result = solver.construct(g, order, 0, Timer.dummyTimer());
         Assert.assertNotNull(result);
         Assert.assertEquals(expected, result.cost());
         BoundedForest tree = result.tree();
@@ -25,8 +26,8 @@ public class BSTTests {
         Graph graph = new GraphBuilder()
                 .addEdge(0, 1, 20)
                 .result();
-        BestTreeAlgorithm.Result fwd = solver.construct(graph, new int[] {0, 1}, 0, () -> false);
-        BestTreeAlgorithm.Result bwd = solver.construct(graph, new int[] {0, 1}, 0, () -> false);
+        BestTreeAlgorithm.Result fwd = solver.construct(graph, new int[] {0, 1}, 0, Timer.dummyTimer());
+        BestTreeAlgorithm.Result bwd = solver.construct(graph, new int[] {0, 1}, 0, Timer.dummyTimer());
 
         Assert.assertNotNull(fwd);
         Assert.assertNotNull(bwd);
@@ -106,8 +107,8 @@ public class BSTTests {
 
         int minChanged = 0;
         do {
-            BestTreeAlgorithm.Result r1 = solver1.construct(g, permutation, 0, () -> false);
-            BestTreeAlgorithm.Result r2 = solver2.construct(g, permutation, minChanged, () -> false);
+            BestTreeAlgorithm.Result r1 = solver1.construct(g, permutation, 0, Timer.dummyTimer());
+            BestTreeAlgorithm.Result r2 = solver2.construct(g, permutation, minChanged, Timer.dummyTimer());
             Assert.assertNotNull(r1);
             Assert.assertNotNull(r2);
             Assert.assertEquals(r1.cost(), r2.cost());

@@ -6,6 +6,7 @@ import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import com.github.mbuzdalov.tree4network.util.DisjointSet;
+import com.github.mbuzdalov.tree4network.util.Timer;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
@@ -36,9 +37,8 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
     }
 
     @Override
-    public Result construct(Graph weights, long timeLimitMillis) {
+    public Result construct(Graph weights, Timer timer) {
         int n = weights.nVertices();
-        long startTimeMillis = System.currentTimeMillis();
         ThreadLocalRandom random = ThreadLocalRandom.current();
         DisjointSet ds = new DisjointSet(n);
         BestTreeAlgorithm.Result bestResult = null;
@@ -100,7 +100,7 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
                 bestResult = new Result(treeCost, tree);
             }
             ++nCompletedQueries;
-        } while (System.currentTimeMillis() - startTimeMillis < timeLimitMillis);
+        } while (!timer.shouldInterrupt());
         System.out.println("  [debug] completed queries: " + nCompletedQueries);
         return bestResult;
     }
