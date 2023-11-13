@@ -13,27 +13,20 @@ public final class BestBSTOverRandomPermutations implements BestTreeAlgorithm {
     }
 
     @Override
-    public Result construct(Graph weights, Timer timer) {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        int n = weights.nVertices();
-        BestBSTOverPermutation solver = new BestBSTOverPermutation(n);
-        BestTreeAlgorithm.Result bestResult = null;
-        int[] vertexOrder = new int[n];
+    public ResultSupplier construct(Graph weights) {
+        return new ResultSupplier() {
+            private final int n = weights.nVertices();
+            private final BestBSTOverPermutation solver = new BestBSTOverPermutation(n);
+            private final int[] vertexOrder = new int[n];
 
-        int nQueriesCompleted = 0;
-        do {
-            Combinatorics.fillRandomPermutation(vertexOrder, random);
-            BestTreeAlgorithm.Result currResult = solver.construct(weights, vertexOrder, 0, timer);
-            if (currResult == null) {
-                break;
+            @Override
+            public Result next(Timer timer) {
+                if (timer.shouldInterrupt()) {
+                    return null;
+                }
+                Combinatorics.fillRandomPermutation(vertexOrder, ThreadLocalRandom.current());
+                return solver.construct(weights, vertexOrder, 0, timer);
             }
-            ++nQueriesCompleted;
-            if (bestResult == null || bestResult.cost() > currResult.cost()) {
-                bestResult = currResult;
-            }
-        } while (!timer.shouldInterrupt());
-
-        System.out.println("  [debug] completed queries: " + nQueriesCompleted);
-        return bestResult;
+        };
     }
 }

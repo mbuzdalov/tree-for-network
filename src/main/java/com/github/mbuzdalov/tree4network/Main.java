@@ -26,7 +26,7 @@ public class Main {
             System.err.println("Cannot retrieve the list of test files");
             System.exit(1);
         }
-        long timeLimitMillis = 60000;
+        long timeLimitMillis = 6000;
 
         System.out.println("Time limit: " + timeLimitMillis + " milliseconds");
         for (File test : tests) {
@@ -40,7 +40,7 @@ public class Main {
             System.out.println("  Graph has " + graph.nVertices() + " vertices and " + (nEdges / 2) + " edges");
             for (BestTreeAlgorithm algo : algorithms) {
                 Timer timer = Timer.newFixedTimer(System.currentTimeMillis(), timeLimitMillis);
-                BestTreeAlgorithm.Result result = algo.construct(graph, timer);
+                BestTreeAlgorithm.Result result = algo.solve(graph, timer);
                 if (result != null) {
                     System.out.println("  " + algo.getName() + ": " + result.cost() + " in " + timer.timeConsumedMillis() + " milliseconds");
                     if (cost.compute(graph, result.tree()) != result.cost()) {
