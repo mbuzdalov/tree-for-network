@@ -3,7 +3,7 @@ package com.github.mbuzdalov.tree4network.algo;
 import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.GraphBuilder;
-import com.github.mbuzdalov.tree4network.Util;
+import com.github.mbuzdalov.tree4network.cost.NaiveCostComputationAlgorithm;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -13,7 +13,7 @@ public class BSTTests {
         Assert.assertNotNull(result);
         Assert.assertEquals(expected, result.cost());
         BoundedForest tree = result.tree();
-        Assert.assertEquals(expected, Util.computeCost(g, tree));
+        Assert.assertEquals(expected, NaiveCostComputationAlgorithm.getInstance().compute(g, tree));
     }
 
     @Test
