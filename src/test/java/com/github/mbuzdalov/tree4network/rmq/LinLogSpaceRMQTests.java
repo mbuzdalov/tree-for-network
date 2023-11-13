@@ -19,12 +19,12 @@ public class LinLogSpaceRMQTests {
     @Test
     public void allSmall() {
         for (int size = 1; size <= 6; ++size) {
-            NaiveRMQ naive = new NaiveRMQ(size);
-            LinLogSpaceRMQ log = new LinLogSpaceRMQ(size);
             int[] array = new int[size];
+            NaiveRMQ naive = new NaiveRMQ(array);
+            LinLogSpaceRMQ log = new LinLogSpaceRMQ(array);
             do {
-                naive.load(array, 0, size);
-                log.load(array, 0, size);
+                naive.reloadArray(size);
+                log.reloadArray(size);
                 for (int l = 0; l < size; ++l) {
                     for (int r = l + 1; r <= size; ++r) {
                         int nq = naive.minimumIndex(l, r);

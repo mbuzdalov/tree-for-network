@@ -3,23 +3,21 @@ package com.github.mbuzdalov.tree4network.rmq;
 public final class LinLogSpaceRMQ extends RangeMinimumQuery {
     private final int[] values;
     private final int[][] data;
-    public LinLogSpaceRMQ(int maxSize) {
+    public LinLogSpaceRMQ(int[] values) {
+        this.values = values;
         int logSize = 0;
-        while ((1 << logSize) <= maxSize) {
+        while ((1 << logSize) <= values.length) {
             ++logSize;
         }
         --logSize;
-        values = new int[maxSize];
         data = new int[logSize][];
         for (int i = 0; i < logSize; ++i) {
-            data[i] = new int[maxSize - (1 << (i + 1)) + 1];
+            data[i] = new int[values.length - (1 << (i + 1)) + 1];
         }
     }
 
     @Override
-    public void load(int[] array, int from, int until) {
-        int n = until - from;
-        System.arraycopy(array, from, values, 0, n);
+    public void reloadArray(int n) {
         if (data.length > 0) {
             int[] d0 = data[0];
             for (int i = 0; i < d0.length; ++i) {

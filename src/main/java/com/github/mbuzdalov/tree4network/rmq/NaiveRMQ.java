@@ -3,14 +3,12 @@ package com.github.mbuzdalov.tree4network.rmq;
 public final class NaiveRMQ extends RangeMinimumQuery {
     private final int[] data;
 
-    public NaiveRMQ(int maxSize) {
-        data = new int[maxSize];
+    public NaiveRMQ(int[] underlyingArray) {
+        data = underlyingArray;
     }
 
     @Override
-    public void load(int[] array, int from, int until) {
-        System.arraycopy(array, from, data, 0, until - from);
-    }
+    public void reloadArray(int size) {}
 
     @Override
     public int minimumIndex(int from, int until) {
