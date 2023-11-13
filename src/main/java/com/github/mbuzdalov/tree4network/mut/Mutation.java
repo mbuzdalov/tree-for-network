@@ -6,9 +6,13 @@ import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 
 import java.util.Random;
 
-public interface Mutation {
+public interface Mutation<Context> {
     String getName();
 
-    BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights,
+    Context createContext(Graph weights);
+
+    void resetContext(Context context);
+
+    BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
                                     CostComputationAlgorithm costAlgo, Random random);
 }

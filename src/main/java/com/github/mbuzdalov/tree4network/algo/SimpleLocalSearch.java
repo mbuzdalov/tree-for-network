@@ -8,11 +8,11 @@ import com.github.mbuzdalov.tree4network.util.Timer;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public final class SimpleLocalSearch implements BestTreeAlgorithm {
+public final class SimpleLocalSearch<C> implements BestTreeAlgorithm {
     private final BestTreeAlgorithm initializer;
-    private final Mutation mutation;
+    private final Mutation<C> mutation;
 
-    public SimpleLocalSearch(BestTreeAlgorithm initializer, Mutation mutation) {
+    public SimpleLocalSearch(BestTreeAlgorithm initializer, Mutation<C> mutation) {
         this.initializer = initializer;
         this.mutation = mutation;
     }
@@ -26,22 +26,32 @@ public final class SimpleLocalSearch implements BestTreeAlgorithm {
     public ResultSupplier construct(Graph weights) {
         return new ResultSupplier() {
             private final CostComputationAlgorithm costAlgo = new DefaultCostComputationAlgorithm(weights.nVertices());
+            private final ResultSupplier initialSolutions = initializer.construct(weights);
             private Result lastResult = null;
+            private final C context = mutation.createContext(weights);
 
             @Override
             public Result next(Timer timer) {
                 if (lastResult == null) {
-                    lastResult = initializer.construct(weights).next(timer);
+                    lastResult = initialSolutions.next(timer);
+                    mutation.resetContext(context);
                     return lastResult;
                 } else {
                     if (timer.shouldInterrupt()) {
                         return null;
                     }
-                    Result nextResult = mutation.mutate(lastResult, weights, costAlgo, ThreadLocalRandom.current());
-                    if (lastResult.cost() >= nextResult.cost()) {
-                        lastResult = nextResult;
+                    Result nextResult = mutation.mutate(lastResult, weights, context, costAlgo, ThreadLocalRandom.current());
+                    if (nextResult == null) {
+                        // the mutation says it is done, need to restart
+                        lastResult = null;
+                        return next(timer);
+                    } else {
+                        if (lastResult.cost() > nextResult.cost()) {
+                            lastResult = nextResult;
+                            mutation.resetContext(context);
+                        }
+                        return nextResult;
                     }
-                    return nextResult;
                 }
             }
         };
