@@ -14,7 +14,7 @@ public final class LinSpaceIncrementalRMQ extends RangeMinimumQuery {
         while ((1 << logSize) <= values.length) {
             ++logSize;
         }
-        blockSize = Math.max(2, logSize / 2);
+        blockSize = Math.max(2, logSize);
         int nBlocks = (values.length + blockSize - 1) / blockSize;
         blockMinValues = new int[nBlocks];
         blockMinIndices = new int[nBlocks];
@@ -26,25 +26,27 @@ public final class LinSpaceIncrementalRMQ extends RangeMinimumQuery {
         precomputeBlocks();
     }
 
+    private int precomputeOne(int str, int bs) {
+        int curr = 0;
+        int best = 0;
+        int bestI = 0;
+        for (int t = 0; t < bs; ++t) {
+            curr += (str & 1) * 2 - 1; // str & 1 == 0 => -1, == 1 => +1
+            if (best > curr) {
+                best = curr;
+                bestI = t + 1;
+            }
+            str >>>= 1;
+        }
+        return bestI;
+    }
+
     private void precomputeBlocks() {
         for (int bsi = 0; bsi < blockPrecomputed.length; ++bsi) {
             int bs = 1 + bsi;
             int[] bp = blockPrecomputed[bsi] = new int[1 << bs];
-            for (int str0 = 0; str0 < bp.length; ++str0) {
-                int str = str0;
-                // str is interpreted as a bit string of length bs, where 0 means -1 and 1 means + 1
-                int curr = 0;
-                int best = 0;
-                int bestI = 0;
-                for (int t = 0; t < bs; ++t) {
-                    curr += (str & 1) * 2 - 1; // str & 1 == 0 => -1, == 1 => +1
-                    if (best > curr) {
-                        best = curr;
-                        bestI = t + 1;
-                    }
-                    str >>>= 1;
-                }
-                bp[str0] = bestI;
+            for (int str = 0; str < bp.length; ++str) {
+                bp[str] = precomputeOne(str, bs);
             }
         }
     }
@@ -69,8 +71,6 @@ public final class LinSpaceIncrementalRMQ extends RangeMinimumQuery {
                 int prev = values[i - 1];
                 if (prev + 1 == curr) {
                     stringEncoding |= 1 << (i - 1 - blockBegin);
-                } else if (prev - 1 != curr) {
-                    throw new IllegalArgumentException("The array is not incremental, this RMQ implementation cannot process it");
                 }
             }
             blockMinIndices[block] = minIndex;
