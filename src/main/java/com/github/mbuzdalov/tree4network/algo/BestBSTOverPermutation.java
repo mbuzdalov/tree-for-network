@@ -2,6 +2,7 @@ package com.github.mbuzdalov.tree4network.algo;
 
 import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
+import com.github.mbuzdalov.tree4network.util.Combinatorics;
 
 import java.util.Arrays;
 import java.util.function.BooleanSupplier;
@@ -29,9 +30,7 @@ public final class BestBSTOverPermutation {
         int n = weights.nVertices();
 
         int[] inverse = new int[n];
-        for (int i = 0; i < n; ++i) {
-            inverse[order[i]] = i;
-        }
+        Combinatorics.fillInverseOrder(order, inverse);
 
         // Construct the weight matrix
         for (int i = 0; i < n; ++i) {

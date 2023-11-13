@@ -1,6 +1,7 @@
 package com.github.mbuzdalov.tree4network.algo;
 
 import com.github.mbuzdalov.tree4network.Graph;
+import com.github.mbuzdalov.tree4network.util.Combinatorics;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BooleanSupplier;
@@ -24,12 +25,7 @@ public final class BestBSTOverRandomPermutations implements BestTreeAlgorithm {
 
         int nQueriesCompleted = 0;
         do {
-            vertexOrder[0] = 0;
-            for (int i = 1; i < n; ++i) {
-                int j = random.nextInt(i + 1);
-                vertexOrder[i] = vertexOrder[j];
-                vertexOrder[j] = i;
-            }
+            Combinatorics.fillRandomPermutation(vertexOrder, random);
             BestTreeAlgorithm.Result currResult = solver.construct(weights, vertexOrder, 0, timerInterrupt);
             if (currResult == null) {
                 break;

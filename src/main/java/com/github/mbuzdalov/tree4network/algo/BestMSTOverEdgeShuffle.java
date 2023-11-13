@@ -4,6 +4,7 @@ import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
+import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import com.github.mbuzdalov.tree4network.util.DisjointSet;
 
 import java.util.Arrays;
@@ -22,25 +23,16 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
         return "Best MST over random edge orderings";
     }
 
-    private static void shufflePart(Edge[] edges, ThreadLocalRandom random, int from, int until) {
-        for (int i = from + 1; i < until; ++i) {
-            int j = random.nextInt(i - from + 1) + from;
-            Edge e = edges[i];
-            edges[i] = edges[j];
-            edges[j] = e;
-        }
-    }
-
     private static void shuffle(Edge[] edges, ThreadLocalRandom random) {
         int last = 0;
         int n = edges.length;
         for (int i = 1; i < n; ++i) {
             if (edges[last].compareTo(edges[i]) != 0) {
-                shufflePart(edges, random, last, i);
+                Combinatorics.shufflePart(edges, last, i, random);
                 last = i;
             }
         }
-        shufflePart(edges, random, last, n);
+        Combinatorics.shufflePart(edges, last, n, random);
     }
 
     @Override
