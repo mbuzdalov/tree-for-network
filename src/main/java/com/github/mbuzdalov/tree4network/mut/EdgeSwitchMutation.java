@@ -38,7 +38,6 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
             return null; // nothing to mutate
         }
         BoundedForest tree = new BoundedForest(result.tree());
-        int n = tree.nVertices();
 
         if (context.used == 0) {
             Combinatorics.fillRandomPermutation(context.mutations, random);
