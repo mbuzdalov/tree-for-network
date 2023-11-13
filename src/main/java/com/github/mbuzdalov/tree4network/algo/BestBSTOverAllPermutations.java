@@ -27,14 +27,19 @@ public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
         }
 
         int nQueriesCompleted = 0;
+        int minChangedSinceLastQuery = n;
         do {
-            Result currResult = solver.construct(weights, vertexOrder, minChanged, timerInterrupt);
-            if (currResult == null) {
-                break;
-            }
-            ++nQueriesCompleted;
-            if (bestResult == null || bestResult.cost() > currResult.cost()) {
-                bestResult = currResult;
+            minChangedSinceLastQuery = Math.min(minChangedSinceLastQuery, minChanged);
+            if (vertexOrder[0] < vertexOrder[n - 1]) {
+                Result currResult = solver.construct(weights, vertexOrder, minChangedSinceLastQuery, timerInterrupt);
+                if (currResult == null) {
+                    break;
+                }
+                minChangedSinceLastQuery = n;
+                ++nQueriesCompleted;
+                if (bestResult == null || bestResult.cost() > currResult.cost()) {
+                    bestResult = currResult;
+                }
             }
         } while ((minChanged = Combinatorics.nextPermutation(vertexOrder)) >= 0
                 && System.currentTimeMillis() - timeStartMillis < timeLimitMillis);

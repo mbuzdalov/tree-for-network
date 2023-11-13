@@ -1,5 +1,6 @@
 package com.github.mbuzdalov.tree4network;
 
+import com.github.mbuzdalov.tree4network.algo.BestBSTOverAllPermutations;
 import com.github.mbuzdalov.tree4network.algo.BestBSTOverRandomPermutations;
 import com.github.mbuzdalov.tree4network.algo.BestMSTOverEdgeShuffle;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
@@ -13,8 +14,9 @@ import java.util.List;
 
 public class Main {
     private static final List<BestTreeAlgorithm> algorithms = List.of(
+            new BestMSTOverEdgeShuffle(),
             new BestBSTOverRandomPermutations(),
-            new BestMSTOverEdgeShuffle()
+            new BestBSTOverAllPermutations()
     );
 
     public static void main(String[] args) throws IOException {
