@@ -1,5 +1,8 @@
 package com.github.mbuzdalov.tree4network;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public final class BoundedForest {
     private static final boolean DEBUG_CHECKS = true;
 
@@ -62,6 +65,58 @@ public final class BoundedForest {
         removeOneEdge(a << 2, b);
         removeOneEdge(b << 2, a);
         --nEdges;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BoundedForest forest = (BoundedForest) o;
+        if (nEdges != forest.nEdges) {
+            return false;
+        }
+        if (state.length != forest.state.length) {
+            return false;
+        }
+
+        int[] vThis = new int[3];
+        int[] vThat = new int[3];
+
+        int nV = nVertices();
+        for (int v = 0; v < nV; ++v) {
+            int d = degree(v);
+            if (d != forest.degree(v)) {
+                return false;
+            }
+            for (int i = 0; i < d; ++i) {
+                vThis[i] = getDestination(v, i);
+                vThat[i] = forest.getDestination(v, i);
+            }
+            Arrays.sort(vThis, 0, d);
+            Arrays.sort(vThat, 0, d);
+            if (!Arrays.equals(vThis, 0, d, vThat, 0, d)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (1 + nEdges) * 37;
+        int nV = nVertices();
+        int[] adj = new int[3];
+        for (int v = 0; v < nV; ++v) {
+            int d = degree(v);
+            for (int i = 0; i < d; ++i) {
+                adj[i] = getDestination(v, i);
+            }
+            Arrays.sort(adj, 0 ,d);
+            for (int i = 0; i < d; ++i) {
+                result = 31 * result + adj[i];
+            }
+        }
+        return result;
     }
 
     private void addOneEdge(int ao, int b) {
