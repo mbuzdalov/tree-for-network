@@ -5,6 +5,7 @@ import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
 import com.github.mbuzdalov.tree4network.mut.EdgeOptimalRelinkMutation;
+import com.github.mbuzdalov.tree4network.mut.EdgeRandomRelinkMutation;
 import com.github.mbuzdalov.tree4network.mut.EdgeSwitchMutation;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
@@ -19,7 +20,9 @@ public class Main {
             new BestBSTOverAllPermutations(),
             new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeSwitchMutation.getInstance()),
             new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance()),
+            new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeRandomRelinkMutation.getInstance()),
             new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeOptimalRelinkMutation.getInstance()),
+            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeRandomRelinkMutation.getInstance()),
             new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeOptimalRelinkMutation.getInstance())
     );
 

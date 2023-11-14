@@ -98,7 +98,7 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
         private int bestIndex;
 
         private Context(int n) {
-            mutations = new int[n];
+            mutations = new int[n - 1];
             queue = new int[n];
             components = new int[n];
             representatives = new int[2];
