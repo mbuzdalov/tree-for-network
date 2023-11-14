@@ -43,45 +43,42 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
             Combinatorics.fillRandomPermutation(context.mutations, random);
         }
 
-        while (true) {
-            BoundedForest tree = new BoundedForest(result.tree());
-            // Choose a random edge
-            int flippedEdge = context.getMutation(random);
-            if (flippedEdge == -1) {
-                return null;
-            }
-            int v1 = 0;
-            while (tree.degree(v1) <= flippedEdge) {
-                flippedEdge -= tree.degree(v1);
-                ++v1;
-            }
-            int v2 = tree.getDestination(v1, flippedEdge);
+        BoundedForest tree = new BoundedForest(result.tree());
+        // Choose a random edge
+        int flippedEdge = context.getMutation(random);
+        if (flippedEdge == -1) {
+            return null;
+        }
+        int v1 = 0;
+        while (tree.degree(v1) <= flippedEdge) {
+            flippedEdge -= tree.degree(v1);
+            ++v1;
+        }
+        int v2 = tree.getDestination(v1, flippedEdge);
 
-            // Remove that edge
-            tree.removeEdge(v1, v2);
-            context.forest = tree;
-            int nComponents = context.markComponents();
-            if (nComponents != 2) {
-                throw new AssertionError("A tree without one edge has to have two components");
-            }
+        // Remove that edge
+        tree.removeEdge(v1, v2);
+        context.forest = tree;
+        int nComponents = context.markComponents();
+        if (nComponents != 2) {
+            throw new AssertionError("A tree without one edge has to have two components");
+        }
 
-            // Compute the optimal answer
-            context.initializeSumWeights(weights);
-            context.computeSubtree(context.representatives[0], -1);
-            context.computeSubtree(context.representatives[1], -1);
-            int newV1 = context.computeAnswer(context.representatives[0]);
-            int newV2 = context.computeAnswer(context.representatives[1]);
-            tree.addEdge(newV1, newV2);
-            if (v1 != newV1 || v2 != newV2) {
-                long cost = costAlgo.compute(weights, tree);
-                if (cost > result.cost()) {
-                    throw new AssertionError("Relink does not work optimally: existing cost " + result.cost() + ", new cost " + cost);
-                }
-                if (cost < result.cost()) {
-                    // Okay, this is our new tree
-                    return new BestTreeAlgorithm.Result(cost, tree);
-                }
+        // Compute the optimal answer
+        context.initializeSumWeights(weights);
+        context.computeSubtree(context.representatives[0], -1);
+        context.computeSubtree(context.representatives[1], -1);
+        int newV1 = context.computeAnswer(context.representatives[0]);
+        int newV2 = context.computeAnswer(context.representatives[1]);
+        tree.addEdge(newV1, newV2);
+        if (v1 != newV1 || v2 != newV2) {
+            long cost = costAlgo.compute(weights, tree);
+            if (cost > result.cost()) {
+                throw new AssertionError("Relink does not work optimally: existing cost " + result.cost() + ", new cost " + cost);
             }
+            return new BestTreeAlgorithm.Result(cost, tree);
+        } else {
+            return result;
         }
     }
 
