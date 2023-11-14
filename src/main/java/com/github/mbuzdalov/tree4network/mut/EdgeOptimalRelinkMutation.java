@@ -5,6 +5,7 @@ import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
+import com.github.mbuzdalov.tree4network.util.Graphs;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -49,12 +50,9 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
         if (flippedEdge == -1) {
             return null;
         }
-        int v1 = 0;
-        while (tree.degree(v1) <= flippedEdge) {
-            flippedEdge -= tree.degree(v1);
-            ++v1;
-        }
-        int v2 = tree.getDestination(v1, flippedEdge);
+        Graphs.Edge flippedEdgeV = Graphs.getNthEdge(tree, flippedEdge);
+        int v1 = flippedEdgeV.v1();
+        int v2 = flippedEdgeV.v2();
 
         // Remove that edge
         tree.removeEdge(v1, v2);
