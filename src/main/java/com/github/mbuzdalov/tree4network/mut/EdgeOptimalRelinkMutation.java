@@ -9,17 +9,17 @@ import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import java.util.Arrays;
 import java.util.Random;
 
-public final class EdgeRelinkMutation implements Mutation<EdgeRelinkMutation.Context> {
-    private static final EdgeRelinkMutation INSTANCE = new EdgeRelinkMutation();
-    private EdgeRelinkMutation() {}
+public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalRelinkMutation.Context> {
+    private static final EdgeOptimalRelinkMutation INSTANCE = new EdgeOptimalRelinkMutation();
+    private EdgeOptimalRelinkMutation() {}
 
-    public static EdgeRelinkMutation getInstance() {
+    public static EdgeOptimalRelinkMutation getInstance() {
         return INSTANCE;
     }
 
     @Override
     public String getName() {
-        return "Edge relink";
+        return "Edge optimal relink";
     }
 
     @Override
