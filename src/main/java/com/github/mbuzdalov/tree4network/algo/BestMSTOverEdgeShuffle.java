@@ -7,24 +7,18 @@ import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import com.github.mbuzdalov.tree4network.util.DisjointSet;
 import com.github.mbuzdalov.tree4network.util.Timer;
+import com.github.mbuzdalov.tree4network.util.WeighedEdge;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
-    private record Edge(int source, int destination, int weight) implements Comparable<Edge> {
-        @Override
-        public int compareTo(Edge o) {
-            return Integer.compare(o.weight, weight);
-        }
-    }
-
     @Override
     public String getName() {
         return "Best MST over random edge orderings";
     }
 
-    private static void shuffle(Edge[] edges, ThreadLocalRandom random) {
+    private static void shuffle(WeighedEdge[] edges, ThreadLocalRandom random) {
         int last = 0;
         int n = edges.length;
         for (int i = 1; i < n; ++i) {
@@ -43,7 +37,7 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
             private final int e = weights.nEdges();
             private final DisjointSet ds = new DisjointSet(n);
             private final int[] degree = new int[n];
-            private final Edge[] edges = new Edge[e];
+            private final WeighedEdge[] edges = new WeighedEdge[e];
             private final CostComputationAlgorithm costAlgo = new DefaultCostComputationAlgorithm(n);
 
             {
@@ -52,7 +46,7 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
                     for (int j = 0; j < nAdj; ++j) {
                         int t = weights.getDestination(i, j);
                         if (i < t) {
-                            edges[ei] = new Edge(i, t, weights.getWeight(i, j));
+                            edges[ei] = new WeighedEdge(i, t, weights.getWeight(i, j));
                             ++ei;
                         }
                     }
@@ -76,11 +70,11 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
                 Arrays.fill(degree, 0);
                 BoundedForest tree = new BoundedForest(n);
                 ds.reset();
-                // first, try adding the existing edges
-                for (int i = 0; i < e; ++i) {
-                    Edge curr = edges[i];
-                    int src = curr.source;
-                    int dst = curr.destination;
+                // first, try adding the existing edges, starting from the heaviest one
+                for (int i = e - 1; i >= 0; --i) {
+                    WeighedEdge curr = edges[i];
+                    int src = curr.v1();
+                    int dst = curr.v2();
                     if (degree[src] < 3 && degree[dst] < 3 && ds.get(src) != ds.get(dst)) {
                         ++degree[src];
                         ++degree[dst];
