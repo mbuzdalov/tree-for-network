@@ -8,8 +8,6 @@ import java.util.Arrays;
 public final class Graphs {
     private Graphs() {}
 
-    public record Edge(int v1, int v2) {}
-
     public static Edge getNthEdge(BoundedForest tree, int index) {
         for (int v1 = 0; v1 < tree.nVertices(); ++v1) {
             int d = tree.degree(v1);

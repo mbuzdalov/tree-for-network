@@ -4,7 +4,7 @@ import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
-import com.github.mbuzdalov.tree4network.util.Graphs;
+import com.github.mbuzdalov.tree4network.util.Edge;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +46,7 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
 
         BoundedForest tree = new BoundedForest(result.tree());
 
-        Graphs.Edge mutation;
+        Edge mutation;
         do {
             mutation = context.getMutation(random);
         } while (mutation != null && tree.hasEdge(mutation.v1(), mutation.v2()));
@@ -93,17 +93,17 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
     }
 
     public static final class Context {
-        private final Graphs.Edge[] mutations;
+        private final Edge[] mutations;
         private final int nVertices;
         private int used;
 
         private Context(int nVertices) {
             this.nVertices = nVertices;
             if (nVertices <= 1000) {
-                mutations = new Graphs.Edge[nVertices * (nVertices - 1) / 2];
+                mutations = new Edge[nVertices * (nVertices - 1) / 2];
                 for (int v1 = 0, i = 0; v1 < nVertices; ++v1) {
                     for (int v2 = v1 + 1; v2 < nVertices; ++v2, ++i) {
-                        mutations[i] = new Graphs.Edge(v1, v2);
+                        mutations[i] = new Edge(v1, v2);
                     }
                 }
             } else {
@@ -111,18 +111,18 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
             }
         }
 
-        private Graphs.Edge getMutation(Random random) {
+        private Edge getMutation(Random random) {
             if (mutations == null) {
                 int v1 = random.nextInt(nVertices);
                 int v2 = random.nextInt(nVertices - 1);
-                return v1 > v2 ? new Graphs.Edge(v2, v1) : new Graphs.Edge(v1, v2 + 1);
+                return v1 > v2 ? new Edge(v2, v1) : new Edge(v1, v2 + 1);
             } else {
                 int firstUsed = mutations.length - used;
                 if (firstUsed == 0) {
                     return null;
                 }
                 int index = random.nextInt(firstUsed);
-                Graphs.Edge result = mutations[index];
+                Edge result = mutations[index];
                 ++used;
                 --firstUsed;
                 mutations[index] = mutations[firstUsed];

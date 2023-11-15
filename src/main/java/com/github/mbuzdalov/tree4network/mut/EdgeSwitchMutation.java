@@ -5,6 +5,7 @@ import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
+import com.github.mbuzdalov.tree4network.util.Edge;
 import com.github.mbuzdalov.tree4network.util.Graphs;
 
 import java.util.Random;
@@ -49,7 +50,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
         if (flippedEdge == -1) {
             return null;
         }
-        Graphs.Edge flippedEdgeV = Graphs.getNthEdge(tree, flippedEdge);
+        Edge flippedEdgeV = Graphs.getNthEdge(tree, flippedEdge);
         int v1 = flippedEdgeV.v1();
         int v2 = flippedEdgeV.v2();
 
