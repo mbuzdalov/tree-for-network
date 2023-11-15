@@ -7,7 +7,6 @@ import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import com.github.mbuzdalov.tree4network.util.Graphs;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalRelinkMutation.Context> {
@@ -56,18 +55,9 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
 
         // Remove that edge
         tree.removeEdge(v1, v2);
-        context.forest = tree;
-        int nComponents = context.markComponents();
-        if (nComponents != 2) {
-            throw new AssertionError("A tree without one edge has to have two components");
-        }
-
-        // Compute the optimal answer
-        context.initializeSumWeights(weights);
-        context.computeSubtree(context.representatives[0], -1);
-        context.computeSubtree(context.representatives[1], -1);
-        int newV1 = context.computeAnswer(context.representatives[0]);
-        int newV2 = context.computeAnswer(context.representatives[1]);
+        Graphs.Edge bestEdge = context.relink.solve(tree, weights);
+        int newV1 = bestEdge.v1();
+        int newV2 = bestEdge.v2();
         tree.addEdge(newV1, newV2);
         if (v1 != newV1 || v2 != newV2) {
             long cost = costAlgo.compute(weights, tree);
@@ -82,23 +72,12 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
 
     public static class Context {
         private final int[] mutations;
-        private final int[] queue;
-        private final int[] components, representatives;
-        private final int[] sumWeights;
-        private final long[] subtreeSum;
-        private BoundedForest forest;
         private int used;
-
-        private long bestAnswer;
-        private int bestIndex;
+        private final Graphs.OptimalRelink relink;
 
         private Context(int n) {
             mutations = new int[n - 1];
-            queue = new int[n];
-            components = new int[n];
-            representatives = new int[2];
-            sumWeights = new int[n];
-            subtreeSum = new long[n];
+            relink = new Graphs.OptimalRelink(n);
         }
 
         private int getMutation(Random random) {
@@ -113,84 +92,6 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
             mutations[index] = mutations[firstUsed];
             mutations[firstUsed] = result;
             return result;
-        }
-
-        private void fillBFS(int start, int component) {
-            int head = 0, tail = 0;
-            components[start] = component;
-            queue[head++] = start;
-            while (head > tail) {
-                int curr = queue[tail++];
-                int degree = forest.degree(curr);
-                for (int i = 0; i < degree; ++i) {
-                    int next = forest.getDestination(curr, i);
-                    if (components[next] == -1) {
-                        components[next] = component;
-                        queue[head++] = next;
-                    }
-                }
-            }
-        }
-
-        private int markComponents() {
-            Arrays.fill(components, -1);
-            int nComponents = 0;
-            for (int i = 0; i < components.length; ++i) {
-                if (components[i] == -1) {
-                    representatives[nComponents] = i;
-                    fillBFS(i, nComponents++);
-                }
-            }
-            return nComponents;
-        }
-
-        private void initializeSumWeights(Graph weights) {
-            Arrays.fill(sumWeights, 0);
-            for (int v1 = 0; v1 < weights.nVertices(); ++v1) {
-                int d1 = weights.degree(v1);
-                for (int i = 0; i < d1; ++i) {
-                    int v2 = weights.getDestination(v1, i);
-                    if (components[v1] != components[v2]) {
-                        int w = weights.getWeight(v1, i);
-                        sumWeights[v1] += w;
-                        sumWeights[v2] += w;
-                    }
-                }
-            }
-        }
-
-        private void computeSubtree(int vertex, int parent) {
-            subtreeSum[vertex] = sumWeights[vertex];
-            int d = forest.degree(vertex);
-            for (int i = 0; i < d; ++i) {
-                int next = forest.getDestination(vertex, i);
-                if (next != parent) {
-                    computeSubtree(next, vertex);
-                    subtreeSum[vertex] += subtreeSum[next];
-                }
-            }
-        }
-
-        private int computeAnswer(int vertex) {
-            bestAnswer = 0; // whatever, should have been subtreeIntegral[vertex], but this is all relative
-            bestIndex = -1;
-            computeAnswerDFS(vertex, -1, 0, 0);
-            return bestIndex;
-        }
-
-        private void computeAnswerDFS(int vertex, int parent, long answer, long onTop) {
-            if (forest.degree(vertex) < 3 && (bestIndex == -1 || bestAnswer > answer)) {
-                bestAnswer = answer;
-                bestIndex = vertex;
-            }
-            int d = forest.degree(vertex);
-            for (int i = 0; i < d; ++i) {
-                int next = forest.getDestination(vertex, i);
-                if (next != parent) {
-                    long newOnTop = onTop + subtreeSum[vertex] - subtreeSum[next];
-                    computeAnswerDFS(next, vertex, answer - subtreeSum[next] + newOnTop, newOnTop);
-                }
-            }
         }
     }
 }
