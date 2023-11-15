@@ -1,7 +1,6 @@
 package com.github.mbuzdalov.tree4network;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 public final class BoundedForest {
     private static final boolean DEBUG_CHECKS = true;
