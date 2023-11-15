@@ -7,6 +7,7 @@ import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
 import com.github.mbuzdalov.tree4network.mut.EdgeOptimalRelinkMutation;
 import com.github.mbuzdalov.tree4network.mut.EdgeRandomRelinkMutation;
 import com.github.mbuzdalov.tree4network.mut.EdgeSwitchMutation;
+import com.github.mbuzdalov.tree4network.mut.SubtreeSwapMutation;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
 import java.io.File;
@@ -19,9 +20,11 @@ public class Main {
             new BestBSTOverRandomPermutations(),
             new BestBSTOverAllPermutations(),
             new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeSwitchMutation.getInstance()),
-            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance()),
+            new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), SubtreeSwapMutation.getInstance()),
             new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeRandomRelinkMutation.getInstance()),
             new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeOptimalRelinkMutation.getInstance()),
+            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance()),
+            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), SubtreeSwapMutation.getInstance()),
             new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeRandomRelinkMutation.getInstance()),
             new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeOptimalRelinkMutation.getInstance())
     );
