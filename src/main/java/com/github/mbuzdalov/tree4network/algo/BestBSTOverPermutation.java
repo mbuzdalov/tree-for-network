@@ -15,14 +15,12 @@ public final class BestBSTOverPermutation {
 
     public BestBSTOverPermutation(int maxN) {
         weightMatrix = new int[maxN][maxN];
-        weightsOut = new long[maxN][];
+        weightsOut = new long[maxN][maxN];
         roots = new int[maxN][];
-        costs = new long[maxN][];
+        costs = new long[maxN][maxN];
         for (int i = 0; i < maxN; ++i) {
-            weightsOut[i] = new long[i];
             roots[i] = new int[i + 1];
             roots[i][i] = i;
-            costs[i] = new long[i + 1];
         }
     }
 
@@ -62,13 +60,13 @@ public final class BestBSTOverPermutation {
                     return true;
                 }
             }
-            weightsOut[r] = new long[r + 1];
             long sum = 0;
             for (int l = r; l >= 0; --l) {
                 sum += sum(weightMatrix[l], 0, l);
                 sum -= sum(weightMatrix[l], l + 1, r + 1);
                 sum += sum(weightMatrix[l], r + 1, n);
                 weightsOut[r][l] = sum;
+                weightsOut[l][r] = sum;
                 perfCounter += n;
             }
         }
@@ -114,10 +112,11 @@ public final class BestBSTOverPermutation {
                 int root = -1;
                 long cost = Long.MAX_VALUE;
 
+                long[] cl = costs[l], cr = costs[r], wl = weightsOut[l], wr = weightsOut[r];
                 for (int m = l; m <= r; ++m) {
                     long costM = 0;
-                    if (m > l) costM += costs[m - 1][l] + weightsOut[m - 1][l];
-                    if (r > m) costM += costs[r][m + 1] + weightsOut[r][m + 1];
+                    if (m > l) costM += cl[m - 1] + wl[m - 1];
+                    if (r > m) costM += cr[m + 1] + wr[m + 1];
                     if (cost > costM) {
                         cost = costM;
                         root = m;
@@ -127,6 +126,7 @@ public final class BestBSTOverPermutation {
 
                 roots[r][l] = root;
                 costs[r][l] = cost;
+                costs[l][r] = cost;
             }
         }
 
