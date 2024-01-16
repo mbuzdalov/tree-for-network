@@ -8,6 +8,8 @@ import java.util.function.BiConsumer;
 
 public interface BestTreeAlgorithm {
     record Result(long cost, BoundedForest tree) {}
+    record ExtendedResult(Result result, int nQueries) {}
+
     interface ResultSupplier {
         Result next(Timer timer);
     }
@@ -15,7 +17,7 @@ public interface BestTreeAlgorithm {
     String getName();
     ResultSupplier construct(Graph weights);
 
-    default Result solve(Graph weights, Timer timer, BiConsumer<Long, Long> logger) {
+    default ExtendedResult solve(Graph weights, Timer timer, BiConsumer<Long, Long> logger) {
         ResultSupplier supplier = construct(weights);
         Result best = null;
         int nQueries = 0;
@@ -23,8 +25,7 @@ public interface BestTreeAlgorithm {
         while (true) {
             Result curr = supplier.next(timer);
             if (curr == null) {
-                System.out.println("  [debug] successful queries: " + nQueries);
-                return best;
+                return new ExtendedResult(best, nQueries);
             }
             if (curr.cost < bestCost) {
                 bestCost = curr.cost;
