@@ -11,7 +11,9 @@ import com.github.mbuzdalov.tree4network.mut.SubtreeSwapMutation;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 public class Main {
@@ -35,28 +37,32 @@ public class Main {
             System.err.println("Cannot retrieve the list of test files");
             System.exit(1);
         }
-        long timeLimitMillis = 6000;
+        long timeLimitMillis = 1000L * Integer.parseInt(args[0]);
 
         System.out.println("Time limit: " + timeLimitMillis + " milliseconds");
-        for (File test : tests) {
-            System.out.println("Processing " + test.getName());
-            Graph graph = GraphFromCSV.fromGZippedFile(test);
-            int nEdges = 0;
-            for (int i = 0; i < graph.nVertices(); ++i) {
-                nEdges += graph.degree(i);
-            }
-            CostComputationAlgorithm cost = new DefaultCostComputationAlgorithm(graph.nVertices());
-            System.out.println("  Graph has " + graph.nVertices() + " vertices and " + (nEdges / 2) + " edges");
-            for (BestTreeAlgorithm algo : algorithms) {
-                Timer timer = Timer.newFixedTimer(System.currentTimeMillis(), timeLimitMillis);
-                BestTreeAlgorithm.Result result = algo.solve(graph, timer);
-                if (result != null) {
-                    System.out.println("  " + algo.getName() + ": " + result.cost() + " in " + timer.timeConsumedMillis() + " milliseconds");
-                    if (cost.compute(graph, result.tree()) != result.cost()) {
-                        throw new AssertionError("Independent cost computation failed");
+        try (PrintWriter log = new PrintWriter(new FileWriter("log.csv"), true)) {
+            log.println("test,algo,time,fitness");
+            for (File test : tests) {
+                System.out.println("Processing " + test.getName());
+                Graph graph = GraphFromCSV.fromGZippedFile(test);
+                int nEdges = 0;
+                for (int i = 0; i < graph.nVertices(); ++i) {
+                    nEdges += graph.degree(i);
+                }
+                CostComputationAlgorithm cost = new DefaultCostComputationAlgorithm(graph.nVertices());
+                System.out.println("  Graph has " + graph.nVertices() + " vertices and " + (nEdges / 2) + " edges");
+                for (BestTreeAlgorithm algo : algorithms) {
+                    Timer timer = Timer.newFixedTimer(System.currentTimeMillis(), timeLimitMillis);
+                    BestTreeAlgorithm.Result result = algo.solve(graph, timer, (time, fitness) ->
+                            log.println(test.getName() + "," + algo.getName() + "," + time + "," + fitness));
+                    if (result != null) {
+                        System.out.println("  " + algo.getName() + ": " + result.cost() + " in " + timer.timeConsumedMillis() + " milliseconds");
+                        if (cost.compute(graph, result.tree()) != result.cost()) {
+                            throw new AssertionError("Independent cost computation failed");
+                        }
+                    } else {
+                        System.out.println("  " + algo.getName() + ": interrupted after " + timer.timeConsumedMillis() + " milliseconds");
                     }
-                } else {
-                    System.out.println("  " + algo.getName() + ": interrupted after " + timer.timeConsumedMillis() + " milliseconds");
                 }
             }
         }
