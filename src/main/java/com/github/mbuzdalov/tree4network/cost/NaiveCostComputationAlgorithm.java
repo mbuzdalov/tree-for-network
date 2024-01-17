@@ -27,6 +27,11 @@ public final class NaiveCostComputationAlgorithm extends CostComputationAlgorith
 
         long result = 0;
         for (int src = 0; src < n; ++src) {
+            int nAdj = weights.degree(src);
+            if (nAdj == 0) {
+                continue;
+            }
+
             Arrays.fill(distArray, n);
             distArray[src] = 0;
             int head = 0, tail = 0;
@@ -34,8 +39,8 @@ public final class NaiveCostComputationAlgorithm extends CostComputationAlgorith
             while (head > tail) {
                 int curr = queue[tail++];
                 int nextDist = distArray[curr] + 1;
-                int nAdj = tree.degree(curr);
-                for (int i = 0; i < nAdj; ++i) {
+                int currAdj = tree.degree(curr);
+                for (int i = 0; i < currAdj; ++i) {
                     int next = tree.getDestination(curr, i);
                     if (distArray[next] > nextDist) {
                         distArray[next] = nextDist;
@@ -44,7 +49,6 @@ public final class NaiveCostComputationAlgorithm extends CostComputationAlgorith
                 }
             }
 
-            int nAdj = weights.degree(src);
             for (int i = 0; i < nAdj; ++i) {
                 int dst = weights.getDestination(src, i);
                 result += (long) (weights.getWeight(src, i)) * distArray[dst];
