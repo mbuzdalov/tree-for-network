@@ -2,10 +2,7 @@ package com.github.mbuzdalov.tree4network;
 
 import com.github.mbuzdalov.tree4network.algo.*;
 import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
-import com.github.mbuzdalov.tree4network.mut.EdgeOptimalRelinkMutation;
-import com.github.mbuzdalov.tree4network.mut.EdgeRandomRelinkMutation;
-import com.github.mbuzdalov.tree4network.mut.EdgeSwitchMutation;
-import com.github.mbuzdalov.tree4network.mut.SubtreeSwapMutation;
+import com.github.mbuzdalov.tree4network.mut.*;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
 import java.io.File;
@@ -25,10 +22,12 @@ public class Main {
             new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), SubtreeSwapMutation.getInstance()),
             new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeRandomRelinkMutation.getInstance()),
             new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeOptimalRelinkMutation.getInstance()),
+            new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), RandomChoiceMutation.getInstance()),
             new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance()),
             new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), SubtreeSwapMutation.getInstance()),
             new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeRandomRelinkMutation.getInstance()),
-            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeOptimalRelinkMutation.getInstance())
+            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeOptimalRelinkMutation.getInstance()),
+            new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), RandomChoiceMutation.getInstance())
     );
 
     private record Task(String graphName, Graph graph, int algoIndex, int runIndex, long timeLimitMillis, PrintWriter log) implements Runnable {
