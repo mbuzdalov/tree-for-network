@@ -6,8 +6,6 @@ import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.util.Edge;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Random;
 
 public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.Context> {
@@ -38,10 +36,6 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
                                            CostComputationAlgorithm costAlgo, Random random) {
         if (result.tree().nVertices() <= 2) {
             return null;
-        }
-
-        if (context.used == 0 && context.mutations != null) {
-            Collections.shuffle(Arrays.asList(context.mutations), random);
         }
 
         BoundedForest tree = new BoundedForest(result.tree());

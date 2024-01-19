@@ -40,10 +40,6 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
             return null; // nothing to mutate
         }
 
-        if (context.used == 0) {
-            Combinatorics.fillRandomPermutation(context.mutations, random);
-        }
-
         BoundedForest tree = new BoundedForest(result.tree());
         // Choose a random edge
         int flippedEdge = context.getMutation(random);
@@ -78,6 +74,7 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
 
         private Context(int n) {
             mutations = new int[n - 1];
+            Combinatorics.fillIdentityPermutation(mutations);
             relink = new Graphs.OptimalRelink(n);
         }
 

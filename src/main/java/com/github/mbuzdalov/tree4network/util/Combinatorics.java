@@ -5,6 +5,13 @@ import java.util.Random;
 public final class Combinatorics {
     private Combinatorics() {}
 
+    public static void fillIdentityPermutation(int[] permutation) {
+        int n = permutation.length;
+        for (int i = 0; i < n; ++i) {
+            permutation[i] = i;
+        }
+    }
+
     public static void fillRandomPermutation(int[] permutation, Random random) {
         int n = permutation.length;
         permutation[0] = 0;

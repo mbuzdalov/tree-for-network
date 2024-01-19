@@ -42,10 +42,6 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
         }
         BoundedForest tree = new BoundedForest(result.tree());
 
-        if (context.used == 0) {
-            Combinatorics.fillRandomPermutation(context.mutations, random);
-        }
-
         // Choose a random edge
         int flippedEdge = context.getMutation(random);
         if (flippedEdge == -1) {
@@ -126,6 +122,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
     public static class Context {
         private Context(int n) {
             mutations = new int[n - 1];
+            Combinatorics.fillIdentityPermutation(mutations);
             visited = new boolean[n];
         }
         private final int[] mutations;
