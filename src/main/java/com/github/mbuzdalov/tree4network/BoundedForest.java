@@ -3,7 +3,7 @@ package com.github.mbuzdalov.tree4network;
 import java.util.Arrays;
 
 public final class BoundedForest {
-    private static final boolean DEBUG_CHECKS = true;
+    private static final boolean DEBUG_CHECKS = false;
 
     private final int[] state; // state[0] is degree, state[1..3] are adjacent vertices
     private int nEdges;
