@@ -6,7 +6,7 @@ import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.util.Edge;
 
-import java.util.Random;
+import java.util.random.RandomGenerator;
 
 public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.Context> {
     private static final SubtreeSwapMutation INSTANCE = new SubtreeSwapMutation();
@@ -33,7 +33,7 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
 
     @Override
     public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
-                                           CostComputationAlgorithm costAlgo, Random random) {
+                                           CostComputationAlgorithm costAlgo, RandomGenerator random) {
         if (result.tree().nVertices() <= 2) {
             return null;
         }
@@ -105,7 +105,7 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
             }
         }
 
-        private Edge getMutation(Random random) {
+        private Edge getMutation(RandomGenerator random) {
             if (mutations == null) {
                 int v1 = random.nextInt(nVertices);
                 int v2 = random.nextInt(nVertices - 1);

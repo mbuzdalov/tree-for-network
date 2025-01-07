@@ -4,7 +4,7 @@ import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 
-import java.util.Random;
+import java.util.random.RandomGenerator;
 
 public final class RandomChoiceMutation implements Mutation<RandomChoiceMutation.Context> {
     private static final RandomChoiceMutation INSTANCE = new RandomChoiceMutation();
@@ -30,7 +30,8 @@ public final class RandomChoiceMutation implements Mutation<RandomChoiceMutation
     }
 
     @Override
-    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context, CostComputationAlgorithm costAlgo, Random random) {
+    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
+                                           CostComputationAlgorithm costAlgo, RandomGenerator random) {
         return context.sample(result, weights, costAlgo, random);
     }
 
@@ -44,7 +45,8 @@ public final class RandomChoiceMutation implements Mutation<RandomChoiceMutation
             subtree = SubtreeSwapMutation.getInstance().createContext(weights);
             relink = EdgeOptimalRelinkMutation.getInstance().createContext(weights);
         }
-        private BestTreeAlgorithm.Result sample(BestTreeAlgorithm.Result prev, Graph weights, CostComputationAlgorithm costAlgo, Random random) {
+        private BestTreeAlgorithm.Result sample(BestTreeAlgorithm.Result prev, Graph weights,
+                                                CostComputationAlgorithm costAlgo, RandomGenerator random) {
             while (nullMask != 7) {
                 int index = random.nextInt(3);
                 if ((nullMask & (1 << index)) == 0) {

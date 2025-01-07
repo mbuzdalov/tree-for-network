@@ -4,7 +4,7 @@ import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.random.RandomGenerator;
 
 public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
     @Override
@@ -23,7 +23,7 @@ public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
             private final long maxIterations = n == 1 ? 1 : Combinatorics.factorialOrMaxLong(n) / 2;
 
             @Override
-            public Result next(Timer timer) {
+            public Result next(Timer timer, RandomGenerator random) {
                 dead |= timer.shouldInterrupt();
                 dead |= iteration == maxIterations;
                 if (dead) {
@@ -33,7 +33,7 @@ public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
                 if (iteration == 0) {
                     minChanged = 0;
                     do {
-                        Combinatorics.fillRandomPermutation(vertexOrder, ThreadLocalRandom.current());
+                        Combinatorics.fillRandomPermutation(vertexOrder, random);
                     } while (vertexOrder[0] > vertexOrder[n - 1]);
                 } else {
                     minChanged = n;

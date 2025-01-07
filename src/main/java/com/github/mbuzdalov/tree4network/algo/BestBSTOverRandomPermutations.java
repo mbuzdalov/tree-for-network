@@ -4,7 +4,7 @@ import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.random.RandomGenerator;
 
 public final class BestBSTOverRandomPermutations implements BestTreeAlgorithm {
     @Override
@@ -20,11 +20,11 @@ public final class BestBSTOverRandomPermutations implements BestTreeAlgorithm {
             private final int[] vertexOrder = new int[n];
 
             @Override
-            public Result next(Timer timer) {
+            public Result next(Timer timer, RandomGenerator random) {
                 if (timer.shouldInterrupt()) {
                     return null;
                 }
-                Combinatorics.fillRandomPermutation(vertexOrder, ThreadLocalRandom.current());
+                Combinatorics.fillRandomPermutation(vertexOrder, random);
                 return solver.construct(weights, vertexOrder, 0, timer);
             }
         };

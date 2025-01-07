@@ -10,7 +10,7 @@ import com.github.mbuzdalov.tree4network.util.Timer;
 import com.github.mbuzdalov.tree4network.util.WeighedEdge;
 
 import java.util.Arrays;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.random.RandomGenerator;
 
 public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
     @Override
@@ -18,7 +18,7 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
         return "Best MST over random edge orderings";
     }
 
-    private static void shuffle(WeighedEdge[] edges, ThreadLocalRandom random) {
+    private static void shuffle(WeighedEdge[] edges, RandomGenerator random) {
         int last = 0;
         int n = edges.length;
         for (int i = 1; i < n; ++i) {
@@ -57,11 +57,10 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
             private boolean firstTime = true;
 
             @Override
-            public Result next(Timer timer) {
+            public Result next(Timer timer, RandomGenerator random) {
                 if (timer.shouldInterrupt()) {
                     return null;
                 }
-                final ThreadLocalRandom random = ThreadLocalRandom.current();
                 if (firstTime) {
                     firstTime = false;
                 } else {

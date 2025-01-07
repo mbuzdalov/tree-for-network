@@ -6,7 +6,7 @@ import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.mut.Mutation;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.random.RandomGenerator;
 
 public final class SimpleLocalSearch<C> implements BestTreeAlgorithm {
     private final BestTreeAlgorithm initializer;
@@ -31,20 +31,20 @@ public final class SimpleLocalSearch<C> implements BestTreeAlgorithm {
             private final C context = mutation.createContext(weights);
 
             @Override
-            public Result next(Timer timer) {
+            public Result next(Timer timer, RandomGenerator random) {
                 if (lastResult == null) {
-                    lastResult = initialSolutions.next(timer);
+                    lastResult = initialSolutions.next(timer, random);
                     mutation.resetContext(context);
                     return lastResult;
                 } else {
                     if (timer.shouldInterrupt()) {
                         return null;
                     }
-                    Result nextResult = mutation.mutate(lastResult, weights, context, costAlgo, ThreadLocalRandom.current());
+                    Result nextResult = mutation.mutate(lastResult, weights, context, costAlgo, random);
                     if (nextResult == null) {
                         // the mutation says it is done, need to restart
                         lastResult = null;
-                        return next(timer);
+                        return next(timer, random);
                     } else {
                         if (lastResult.cost() > nextResult.cost()) {
                             lastResult = nextResult;

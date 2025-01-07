@@ -8,7 +8,7 @@ import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import com.github.mbuzdalov.tree4network.util.Edge;
 import com.github.mbuzdalov.tree4network.util.Graphs;
 
-import java.util.Random;
+import java.util.random.RandomGenerator;
 
 public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalRelinkMutation.Context> {
     private static final EdgeOptimalRelinkMutation INSTANCE = new EdgeOptimalRelinkMutation();
@@ -35,7 +35,7 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
 
     @Override
     public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
-                                           CostComputationAlgorithm costAlgo, Random random) {
+                                           CostComputationAlgorithm costAlgo, RandomGenerator random) {
         if (result.tree().nVertices() <= 2) {
             return null; // nothing to mutate
         }
@@ -78,7 +78,7 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
             relink = new Graphs.OptimalRelink(n);
         }
 
-        private int getMutation(Random random) {
+        private int getMutation(RandomGenerator random) {
             int firstUsed = mutations.length - used;
             if (firstUsed == 0) {
                 return -1;

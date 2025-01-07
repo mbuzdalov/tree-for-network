@@ -11,8 +11,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Optional;
+import java.util.random.RandomGenerator;
+import java.util.random.RandomGeneratorFactory;
 
 public class Main {
+    // This is JDK 17 default
+    private static final RandomGeneratorFactory<RandomGenerator> factory = RandomGeneratorFactory.of("L32X64MixRandom");
+
     private record NamedAlgorithm(String name, BestTreeAlgorithm algorithm) {}
     private record NamedGraph(String name, Graph graph) {}
 
@@ -39,8 +44,11 @@ public class Main {
 
         @Override
         public void run() {
+            byte[] seed = (graph.name() + "::" + algo.name() + "::" + runID).getBytes();
+            RandomGenerator random = factory.create(seed);
+
             Timer timer = Timer.newFixedTimer(System.currentTimeMillis(), timeLimitMillis);
-            BestTreeAlgorithm.ExtendedResult result = algo.algorithm().solve(graph.graph(), timer, this::writeFitness);
+            BestTreeAlgorithm.ExtendedResult result = algo.algorithm().solve(graph.graph(), timer, random, this::writeFitness);
             System.out.print(graph.name() + "," + algo.name() + "," + runID + "," + timer.timeConsumedMillis() + ": ");
             if (result.result() != null) {
                 System.out.println(result.result().cost() + ", " + result.nQueries() + " queries");

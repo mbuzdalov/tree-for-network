@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.util;
 
-import java.util.Random;
+import java.util.random.RandomGenerator;
 
 public final class Combinatorics {
     private Combinatorics() {}
@@ -21,7 +21,7 @@ public final class Combinatorics {
      * @param permutation the array to be filled with a random permutation.
      * @param random the random number generator to use.
      */
-    public static void fillRandomPermutation(int[] permutation, Random random) {
+    public static void fillRandomPermutation(int[] permutation, RandomGenerator random) {
         int n = permutation.length;
         permutation[0] = 0;
         for (int i = 1; i < n; ++i) {
@@ -53,9 +53,9 @@ public final class Combinatorics {
      * @param random the random number generator to use.
      * @param <T> the type of elements in the array.
      */
-    public static <T> void shufflePart(T[] array, int from, int until, Random random) {
+    public static <T> void shufflePart(T[] array, int from, int until, RandomGenerator random) {
         for (int i = from + 1; i < until; ++i) {
-            int j = random.nextInt(i - from + 1) + from;
+            int j = random.nextInt(from, i + 1);
             T e = array[i];
             array[i] = array[j];
             array[j] = e;
