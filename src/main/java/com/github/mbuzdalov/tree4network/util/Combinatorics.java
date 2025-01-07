@@ -63,4 +63,18 @@ public final class Combinatorics {
         }
         return -1;
     }
+
+    public static long factorialOrMaxLong(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("n is negative");
+        }
+        if (n > 20) {
+            return Long.MAX_VALUE;
+        }
+        long result = 1;
+        for (int i = 2; i <= n; ++i) {
+            result *= i;
+        }
+        return result;
+    }
 }

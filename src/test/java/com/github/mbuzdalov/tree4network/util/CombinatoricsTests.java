@@ -45,4 +45,14 @@ public class CombinatoricsTests {
             Assert.assertEquals(f, nRuns);
         }
     }
+
+    @Test
+    public void testFactorial() {
+        Assert.assertEquals(1L, Combinatorics.factorialOrMaxLong(1));
+        Assert.assertEquals(24L, Combinatorics.factorialOrMaxLong(4));
+        Assert.assertEquals(3628800L, Combinatorics.factorialOrMaxLong(10));
+        Assert.assertEquals(2432902008176640000L, Combinatorics.factorialOrMaxLong(20));
+        Assert.assertEquals(Long.MAX_VALUE, Combinatorics.factorialOrMaxLong(21));
+        Assert.assertEquals(Long.MAX_VALUE, Combinatorics.factorialOrMaxLong(Integer.MAX_VALUE));
+    }
 }
