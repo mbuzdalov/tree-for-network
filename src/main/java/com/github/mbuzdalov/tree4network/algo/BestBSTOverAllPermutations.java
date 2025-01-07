@@ -4,6 +4,8 @@ import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
     @Override
     public String getName() {
@@ -16,25 +18,29 @@ public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
             private final int n = weights.nVertices();
             private final BestBSTOverPermutation solver = new BestBSTOverPermutation(n);
             private final int[] vertexOrder = new int[n];
-            private boolean firstTime = true, dead = false;
+            private boolean dead = false;
+            private long iteration = 0;
+            private final long maxIterations = n == 1 ? 1 : Combinatorics.factorialOrMaxLong(n) / 2;
 
             @Override
             public Result next(Timer timer) {
                 dead |= timer.shouldInterrupt();
+                dead |= iteration == maxIterations;
                 if (dead) {
                     return null;
                 }
                 int minChanged;
-                if (firstTime) {
+                if (iteration == 0) {
                     minChanged = 0;
-                    firstTime = false;
-                    for (int i = 0; i < n; ++i) {
-                        vertexOrder[i] = i;
-                    }
+                    do {
+                        Combinatorics.fillRandomPermutation(vertexOrder, ThreadLocalRandom.current());
+                    } while (vertexOrder[0] > vertexOrder[n - 1]);
                 } else {
                     minChanged = n;
                     int perfCounter = 0;
-                    while ((minChanged = Math.min(minChanged, Combinatorics.nextPermutation(vertexOrder))) >= 0) {
+                    while (true) {
+                        minChanged = Math.min(minChanged, Combinatorics.nextPermutation(vertexOrder));
+                        minChanged = Math.max(0, minChanged); // 987...1 to 123...9 is now legal
                         if (vertexOrder[0] < vertexOrder[n - 1]) {
                             break;
                         }
@@ -47,11 +53,8 @@ public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
                             }
                         }
                     }
-                    if (minChanged == -1) {
-                        dead = true;
-                        return null;
-                    }
                 }
+                ++iteration;
                 Result currResult = solver.construct(weights, vertexOrder, minChanged, timer);
                 dead = currResult == null;
                 return currResult;
