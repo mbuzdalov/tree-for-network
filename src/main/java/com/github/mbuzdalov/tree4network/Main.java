@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Optional;
 import java.util.random.RandomGenerator;
@@ -45,6 +47,17 @@ public class Main {
         @Override
         public void run() {
             byte[] seed = (graph.name() + "::" + algo.name() + "::" + runID).getBytes();
+
+            // The factory.create(seed) constructor does not do what I want:
+            // it is unfortunately not guaranteed that all bytes in seed will be used.
+            // So we need to re-hash these.
+
+            try {
+                seed = MessageDigest.getInstance("SHA-256").digest(seed);
+            } catch (NoSuchAlgorithmException e) {
+                throw new IllegalStateException("Java is guaranteed to have SHA-256");
+            }
+
             RandomGenerator random = factory.create(seed);
 
             Timer timer = Timer.newFixedTimer(System.currentTimeMillis(), timeLimitMillis);
