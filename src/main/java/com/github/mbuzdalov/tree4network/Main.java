@@ -31,12 +31,16 @@ public class Main {
             new NamedAlgorithm("MST+subtree", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), SubtreeSwapMutation.getInstance())),
             new NamedAlgorithm("MST+replaceR", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeRandomRelinkMutation.getInstance())),
             new NamedAlgorithm("MST+replaceO", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeOptimalRelinkMutation.getInstance())),
+            new NamedAlgorithm("MST+bstMut", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), RandomBSTTraversalMutation.getInstance())),
             new NamedAlgorithm("MST+random", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), RandomChoiceMutation.getInstance())),
+            new NamedAlgorithm("MST+budget", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), MinBudgetMutation.getInstance())),
             new NamedAlgorithm("BST+switch", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance())),
             new NamedAlgorithm("BST+subtree", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), SubtreeSwapMutation.getInstance())),
             new NamedAlgorithm("BST+replaceR", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeRandomRelinkMutation.getInstance())),
             new NamedAlgorithm("BST+replaceO", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeOptimalRelinkMutation.getInstance())),
-            new NamedAlgorithm("BST+random", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), RandomChoiceMutation.getInstance()))
+            new NamedAlgorithm("BST+random", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), RandomChoiceMutation.getInstance())),
+            new NamedAlgorithm("BST+bstMut", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), RandomBSTTraversalMutation.getInstance())),
+            new NamedAlgorithm("BST+budget", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), MinBudgetMutation.getInstance()))
     );
 
     private record Task(NamedGraph graph, NamedAlgorithm algo, String runID, long timeLimitMillis, PrintWriter log) implements Runnable {
