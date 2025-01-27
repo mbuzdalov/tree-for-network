@@ -4,9 +4,22 @@ import com.github.mbuzdalov.tree4network.BoundedForest;
 import com.github.mbuzdalov.tree4network.Graph;
 
 import java.util.Arrays;
+import java.util.random.RandomGenerator;
 
 public final class Graphs {
     private Graphs() {}
+
+    public static void shuffle(WeighedEdge[] edges, RandomGenerator random) {
+        int last = 0;
+        int n = edges.length;
+        for (int i = 1; i < n; ++i) {
+            if (edges[last].compareTo(edges[i]) != 0) {
+                Combinatorics.shufflePart(edges, last, i, random);
+                last = i;
+            }
+        }
+        Combinatorics.shufflePart(edges, last, n, random);
+    }
 
     public static Edge getNthEdge(BoundedForest tree, int index) {
         for (int v1 = 0; v1 < tree.nVertices(); ++v1) {
