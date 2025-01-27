@@ -55,21 +55,11 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
         private int nEdges;
 
         private final int[] counts = new int[4];
-        private final long[] bestImprovement1 = new long[2];
-        private final long[] bestImprovement2 = new long[2];
+        private long bestCrossover = Long.MAX_VALUE;
 
         private void consume(long oldCostA, long oldCostB, long newCost) {
+            bestCrossover = Math.min(bestCrossover, newCost);
             if (newCost < oldCostA && newCost < oldCostB) {
-                long pCost = Math.min(oldCostA, oldCostB);
-                System.out.println("Improved from " + pCost + " to " + newCost);
-                if (bestImprovement1[0] == 0 || newCost < bestImprovement1[0]) {
-                    bestImprovement1[0] = newCost;
-                    bestImprovement1[1] = pCost;
-                }
-                if (pCost - newCost > bestImprovement2[1] - bestImprovement2[0]) {
-                    bestImprovement2[0] = newCost;
-                    bestImprovement2[1] = pCost;
-                }
                 counts[0]++;
             } else if (newCost == oldCostA || newCost == oldCostB) {
                 System.out.println("Repeated best of the parents");
@@ -81,8 +71,7 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
                 System.out.println("Strictly between the parents");
                 counts[2]++;
             }
-            System.out.println("Counts: " + Arrays.toString(counts) + ", best improvement: " + bestImprovement1[1] + " => " + bestImprovement1[0]
-                    + ", deepest improvement: " + bestImprovement2[1] + " => " + bestImprovement2[0]);
+            System.out.println("Counts: " + Arrays.toString(counts) + ", best crossover: " + bestCrossover);
         }
 
         private Context(int n) {
