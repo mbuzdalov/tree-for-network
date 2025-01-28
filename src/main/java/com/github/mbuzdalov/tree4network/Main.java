@@ -4,6 +4,7 @@ import com.github.mbuzdalov.tree4network.algo.*;
 import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
 import com.github.mbuzdalov.tree4network.mut.*;
 import com.github.mbuzdalov.tree4network.util.Timer;
+import com.github.mbuzdalov.tree4network.xover.PartitionCrossover;
 import com.github.mbuzdalov.tree4network.xover.RandomEdgeSubsetCrossover;
 import com.github.mbuzdalov.tree4network.xover.GreedyEdgeSubsetCrossover;
 
@@ -43,6 +44,7 @@ public class Main {
             new NamedAlgorithm("BST+replaceOB", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), OptimalMoveMutation.getInstance())),
             new NamedAlgorithm("BST+random", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), RandomChoiceMutation.getInstance())),
             new NamedAlgorithm("BST+bstMut", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), RandomBSTTraversalMutation.getInstance())),
+
             new NamedAlgorithm("MST+switch+randomES", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
                     EdgeSwitchMutation.getInstance(), RandomEdgeSubsetCrossover.getInstance())),
             new NamedAlgorithm("MST+replaceO+randomES", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
@@ -51,6 +53,7 @@ public class Main {
                     EdgeSwitchMutation.getInstance(), RandomEdgeSubsetCrossover.getInstance())),
             new NamedAlgorithm("BST+replaceO+randomES", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
                     EdgeOptimalRelinkMutation.getInstance(), RandomEdgeSubsetCrossover.getInstance())),
+
             new NamedAlgorithm("MST+switch+greedyES", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
                     EdgeSwitchMutation.getInstance(), GreedyEdgeSubsetCrossover.getInstance())),
             new NamedAlgorithm("MST+replaceO+greedyES", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
@@ -58,7 +61,17 @@ public class Main {
             new NamedAlgorithm("BST+switch+greedyES", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
                     EdgeSwitchMutation.getInstance(), GreedyEdgeSubsetCrossover.getInstance())),
             new NamedAlgorithm("BST+replaceO+greedyES", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
-                    EdgeOptimalRelinkMutation.getInstance(), GreedyEdgeSubsetCrossover.getInstance()))
+                    EdgeOptimalRelinkMutation.getInstance(), GreedyEdgeSubsetCrossover.getInstance())),
+
+            new NamedAlgorithm("MST+switch+PX", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
+                    EdgeSwitchMutation.getInstance(), PartitionCrossover.getInstance())),
+            new NamedAlgorithm("MST+replaceO+PX", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
+                    EdgeOptimalRelinkMutation.getInstance(), PartitionCrossover.getInstance())),
+            new NamedAlgorithm("BST+switch+PX", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
+                    EdgeSwitchMutation.getInstance(), PartitionCrossover.getInstance())),
+            new NamedAlgorithm("BST+replaceO+PX", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
+                    EdgeOptimalRelinkMutation.getInstance(), PartitionCrossover.getInstance()))
+
     );
 
     private record Task(NamedGraph graph, NamedAlgorithm algo, String runID, long timeLimitMillis, PrintWriter log) implements Runnable {
