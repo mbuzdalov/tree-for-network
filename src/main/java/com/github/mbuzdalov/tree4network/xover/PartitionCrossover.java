@@ -69,11 +69,19 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
         context.reset();
         int nComponents = context.nComponents(xor);
         context.setInitResults(resultA, resultB, weights, costAlgo);
+        System.out.print("Common edges: " + common.nEdges() + ", xor edges: " + xor.nEdges() + ", xor components: " + nComponents + ":");
         if (nComponents > 1) {
-            System.out.print("Common edges: " + common.nEdges() + ", xor edges: " + xor.nEdges() + ", xor components: " + nComponents + ":");
             context.go(xor, common, 1, nComponents, timer);
-            System.out.println(" Done! [best crossover cost = " + context.bestCrossoverCost + "]");
         }
+        ++context.nRuns;
+        context.sumComponents += nComponents;
+        if (context.bestResult.cost() < resultA.cost() && context.bestResult.cost() < resultB.cost()) {
+            ++context.nImprovements;
+        }
+        System.out.println(" Done! [best crossover cost = " + context.bestCrossoverCost
+                + ", better: " + context.nImprovements
+                + ", equal: " + (context.nRuns - context.nImprovements)
+                + ", avg components: " + ((double) (context.sumComponents) / context.nRuns) + "]");
         return context.bestResult;
     }
 
@@ -83,6 +91,8 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
         private long bestCrossoverCost = Long.MAX_VALUE;
         private CostComputationAlgorithm costAlgo;
         private Graph weights;
+
+        private int nRuns, nImprovements, sumComponents;
 
         private Context(int n) {
             component = new int[n];
