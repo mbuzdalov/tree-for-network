@@ -13,7 +13,10 @@ public final class BestBSTOverAllPermutations implements BestTreeAlgorithm {
     }
 
     @Override
-    public ResultSupplier construct(Graph weights) {
+    public ResultSupplier construct(Graph weights, int maxDegree) {
+        if (maxDegree != 3) {
+            throw new IllegalArgumentException("This algorithm is not supported for maxDegree = " + maxDegree);
+        }
         return new ResultSupplier() {
             private final int n = weights.nVertices();
             private final BestBSTOverPermutation solver = new BestBSTOverPermutation(n);

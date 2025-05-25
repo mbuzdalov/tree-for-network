@@ -74,14 +74,15 @@ public class Main {
 
     );
 
-    private record Task(NamedGraph graph, NamedAlgorithm algo, String runID, long timeLimitMillis, PrintWriter log) implements Runnable {
+    private record Task(NamedGraph graph, NamedAlgorithm algo, int maxDegree,
+                        String runID, long timeLimitMillis, PrintWriter log) implements Runnable {
         private void writeFitness(long time, long fitness) {
-            log.println(graph.name() + "," + algo.name() + "," + runID + "," + time + "," + fitness);
+            log.println(graph.name() + "," + algo.name() + "," + maxDegree + "," + runID + "," + time + "," + fitness);
         }
 
         @Override
         public void run() {
-            byte[] seed = (graph.name() + "::" + algo.name() + "::" + runID).getBytes();
+            byte[] seed = (graph.name() + "::" + algo.name() + "::" + maxDegree + "::" + runID).getBytes();
 
             // The factory.create(seed) constructor does not do what I want:
             // it is unfortunately not guaranteed that all bytes in seed will be used.
@@ -96,8 +97,8 @@ public class Main {
             RandomGenerator random = factory.create(seed);
 
             Timer timer = Timer.newFixedTimer(System.currentTimeMillis(), timeLimitMillis);
-            BestTreeAlgorithm.ExtendedResult result = algo.algorithm().solve(graph.graph(), timer, random, this::writeFitness);
-            System.out.print(graph.name() + "," + algo.name() + "," + runID + "," + timer.timeConsumedMillis() + ": ");
+            BestTreeAlgorithm.ExtendedResult result = algo.algorithm().solve(graph.graph(), maxDegree, timer, random, this::writeFitness);
+            System.out.print(graph.name() + "," + algo.name() + "," + maxDegree + "," + runID + "," + timer.timeConsumedMillis() + ": ");
             if (result.result() != null) {
                 System.out.println(result.result().cost() + ", " + result.nQueries() + " queries");
             } else {
@@ -110,6 +111,7 @@ public class Main {
         System.err.println("Usage: <algo> <file> <runID> <timeout> <fitness-log>, where:");
         System.err.println("  <algo>         the name of the algorithm to run");
         System.err.println("  <file>         the dataset to run the algorithm on");
+        System.err.println("  <maxDegree>    the maximum degree of a vertex in the answer (should be at least 2)");
         System.err.println("  <runID>        a string that gets logged verbatim to indicate the run");
         System.err.println("  <timeout>      the maximum runtime, in seconds");
         System.err.println("  <fitness-log>  the file for fitness trajectory logging");
@@ -152,8 +154,7 @@ public class Main {
         }
     }
 
-    private static long getTimeout(String[] args) {
-        String timeout = args[3];
+    private static long getTimeout(String timeout) {
         try {
             long result = Long.parseLong(timeout);
             if (result <= 0) {
@@ -169,18 +170,35 @@ public class Main {
         }
     }
 
+    private static int getMaxDegree(String maxDegree) {
+        try {
+            int result = Integer.parseInt(maxDegree);
+            if (result <= 1) {
+                System.err.println("Error: expected maximum degree at least 2, found '" + result + "'");
+                usage();
+                throw new IllegalStateException("System.exit(1) failed");
+            }
+            return result;
+        } catch (NumberFormatException ex) {
+            System.err.println("Error: expected number as maximum degree, found '" + maxDegree + "'");
+            usage();
+            throw new IllegalStateException("System.exit(1) failed");
+        }
+    }
+
     public static void main(String[] args) throws IOException {
-        if (args.length != 5) {
+        if (args.length != 6) {
             usage();
             return;
         }
 
         NamedAlgorithm algo = getAlgorithm(args);
         NamedGraph graph = getGraph(args);
-        String runID = args[2];
-        long timeLimitMillis = getTimeout(args) * 1000;
-        try (PrintWriter log = new PrintWriter(new FileWriter(args[4], true))) {
-            new Task(graph, algo, runID, timeLimitMillis, log).run();
+        int maxDegree = getMaxDegree(args[2]);
+        String runID = args[3];
+        long timeLimitMillis = getTimeout(args[4]) * 1000;
+        try (PrintWriter log = new PrintWriter(new FileWriter(args[5], true))) {
+            new Task(graph, algo, maxDegree, runID, timeLimitMillis, log).run();
         }
     }
 }

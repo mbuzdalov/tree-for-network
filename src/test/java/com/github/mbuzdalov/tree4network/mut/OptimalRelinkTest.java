@@ -11,23 +11,25 @@ import org.junit.Test;
 public class OptimalRelinkTest {
     @Test
     public void smallTest() {
+        int n = 4;
+        int d = 3;
         Graph weights = new GraphBuilder()
                 .addEdge(1, 2, 10)
+                .setNumberVertices(n)
                 .result();
 
-        int d = 3;
-        BoundedSimpleGraph initialTree = new BoundedSimpleGraph(4, d);
+        BoundedSimpleGraph initialTree = new BoundedSimpleGraph(n, d);
         initialTree.addEdge(0, 1);
         initialTree.addEdge(0, 2);
         initialTree.addEdge(2, 3);
 
-        BoundedSimpleGraph expectedTree = new BoundedSimpleGraph(4, d);
+        BoundedSimpleGraph expectedTree = new BoundedSimpleGraph(n, d);
         expectedTree.addEdge(0, 1);
         expectedTree.addEdge(1, 2);
         expectedTree.addEdge(2, 3);
 
         initialTree.removeEdge(0, 2);
-        Edge best = new Graphs.OptimalRelink(4).solve(initialTree, weights);
+        Edge best = new Graphs.OptimalRelink(weights, d).solve(initialTree);
         initialTree.addEdge(best.v1(), best.v2());
 
         Assert.assertEquals(expectedTree, initialTree);

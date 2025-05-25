@@ -26,8 +26,8 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
     }
 
     @Override
-    public Context createContext(Graph weights) {
-        return new Context(weights, 3);
+    public Context createContext(Graph weights, int maxDegree) {
+        return new Context(weights, maxDegree);
     }
 
     @Override

@@ -21,8 +21,8 @@ public final class OptimalMoveMutation implements Mutation<OptimalMoveMutation.C
     }
 
     @Override
-    public Context createContext(Graph weights) {
-        return new Context(weights);
+    public Context createContext(Graph weights, int maxDegree) {
+        return new Context(weights, maxDegree);
     }
 
     @Override
@@ -42,9 +42,9 @@ public final class OptimalMoveMutation implements Mutation<OptimalMoveMutation.C
 
         private boolean canRelink = true;
 
-        private Context(Graph weights) {
-            relink = EdgeOptimalRelinkMutation.getInstance().createContext(weights);
-            bst = RandomBSTTraversalMutation.getInstance().createContext(weights);
+        private Context(Graph weights, int maxDegree) {
+            relink = EdgeOptimalRelinkMutation.getInstance().createContext(weights, maxDegree);
+            bst = RandomBSTTraversalMutation.getInstance().createContext(weights, maxDegree);
         }
 
         private BestTreeAlgorithm.Result sample(BestTreeAlgorithm.Result prev,

@@ -25,8 +25,8 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
     }
 
     @Override
-    public Context createContext(Graph weights) {
-        return new Context(weights);
+    public Context createContext(Graph weights, int maxDegree) {
+        return new Context(weights, maxDegree);
     }
 
     @Override
@@ -53,7 +53,7 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
 
         // Remove that edge
         tree.removeEdge(v1, v2);
-        Edge bestEdge = context.relink.solve(tree, context.weights);
+        Edge bestEdge = context.relink.solve(tree);
         int newV1 = bestEdge.v1();
         int newV2 = bestEdge.v2();
         tree.addEdge(newV1, newV2);
@@ -74,12 +74,12 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
         private int used;
         private final Graphs.OptimalRelink relink;
 
-        private Context(Graph weights) {
+        private Context(Graph weights, int maxDegree) {
             this.weights = weights;
             int n = weights.nVertices();
             mutations = new int[n - 1];
             Combinatorics.fillIdentityPermutation(mutations);
-            relink = new Graphs.OptimalRelink(n);
+            relink = new Graphs.OptimalRelink(weights, maxDegree);
         }
 
         private int getMutation(RandomGenerator random) {

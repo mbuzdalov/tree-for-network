@@ -10,7 +10,7 @@ import java.util.random.RandomGenerator;
 public interface Crossover<Context> {
     String getName();
 
-    Context createContext(Graph weights);
+    Context createContext(Graph weights, int maxDegree);
 
     void resetContext(Context context);
 

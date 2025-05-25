@@ -27,14 +27,14 @@ public final class LocalOptimaRecombiner<C1, C2> implements BestTreeAlgorithm {
     }
 
     @Override
-    public ResultSupplier construct(Graph weights) {
+    public ResultSupplier construct(Graph weights, int maxDegree) {
         return new ResultSupplier() {
             private final CostComputationAlgorithm costAlgo = new DefaultCostComputationAlgorithm(weights.nVertices());
-            private final ResultSupplier initialSolutions = initializer.construct(weights);
+            private final ResultSupplier initialSolutions = initializer.construct(weights, maxDegree);
             private Result bestKnownResult = null;
             private Result lastResult = null;
-            private final C1 mutationCtx = mutation.createContext(weights);
-            private final C2 crossoverCtx = crossover.createContext(weights);
+            private final C1 mutationCtx = mutation.createContext(weights, maxDegree);
+            private final C2 crossoverCtx = crossover.createContext(weights, maxDegree);
 
             @Override
             public Result next(Timer timer, RandomGenerator random) {

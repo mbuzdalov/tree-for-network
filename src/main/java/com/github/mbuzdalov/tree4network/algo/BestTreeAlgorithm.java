@@ -16,11 +16,11 @@ public interface BestTreeAlgorithm {
     }
 
     String getName();
-    ResultSupplier construct(Graph weights);
+    ResultSupplier construct(Graph weights, int maxDegree);
 
-    default ExtendedResult solve(Graph weights,
+    default ExtendedResult solve(Graph weights, int maxDegree,
                                  Timer timer, RandomGenerator random, BiConsumer<Long, Long> logger) {
-        ResultSupplier supplier = construct(weights);
+        ResultSupplier supplier = construct(weights, maxDegree);
         Result best = null;
         long nQueries = 0;
         long bestCost = Long.MAX_VALUE;

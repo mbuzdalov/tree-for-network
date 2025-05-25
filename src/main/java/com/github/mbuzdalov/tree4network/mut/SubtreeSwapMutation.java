@@ -23,7 +23,7 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
     }
 
     @Override
-    public Context createContext(Graph weights) {
+    public Context createContext(Graph weights, int maxDegree) {
         return new Context(weights);
     }
 

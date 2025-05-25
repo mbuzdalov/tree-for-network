@@ -24,8 +24,8 @@ public final class RandomBSTTraversalMutation implements Mutation<RandomBSTTrave
     }
 
     @Override
-    public Context createContext(Graph weights) {
-        return new Context(weights);
+    public Context createContext(Graph weights, int maxDegree) {
+        return new Context(weights, maxDegree);
     }
 
     @Override
@@ -51,7 +51,10 @@ public final class RandomBSTTraversalMutation implements Mutation<RandomBSTTrave
         private final int[] previous;
         private int offset;
 
-        private Context(Graph weights) {
+        private Context(Graph weights, int maxDegree) {
+            if (maxDegree != 3) {
+                throw new IllegalArgumentException("This operator is not supported for maxDegree = " + maxDegree);
+            }
             this.weights = weights;
             int n = weights.nVertices();
             bst = new BestBSTOverPermutation(n);

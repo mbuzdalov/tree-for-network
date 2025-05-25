@@ -26,7 +26,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
     }
 
     @Override
-    public Context createContext(Graph weights) {
+    public Context createContext(Graph weights, int maxDegree) {
         return new Context(weights);
     }
 

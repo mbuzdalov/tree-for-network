@@ -38,6 +38,8 @@ public final class Graphs {
     }
 
     public static class OptimalRelink {
+        private final Graph weights;
+        private final int maxDegree;
         private final int[] queue;
         private final int[] components, representatives;
         private final long[] sumWeights;
@@ -46,15 +48,21 @@ public final class Graphs {
         private long bestAnswer;
         private int bestIndex;
 
-        public OptimalRelink(int maxSize) {
+        public OptimalRelink(Graph weights, int maxDegree) {
+            this.weights = weights;
+            this.maxDegree = maxDegree;
+            int maxSize = weights.nVertices();
+
             queue = new int[maxSize];
             components = new int[maxSize];
             representatives = new int[2];
             sumWeights = new long[maxSize];
             subtreeSum = new long[maxSize];
+
+            initializeSumWeights();
         }
 
-        public Edge solve(BoundedSimpleGraph forest, Graph weights) {
+        public Edge solve(BoundedSimpleGraph forest) {
             this.forest = forest;
 
             int nComponents = markComponents();
@@ -63,7 +71,7 @@ public final class Graphs {
             }
 
             // Compute the optimal answer
-            initializeSumWeights(weights);
+            initializeSumWeights();
             computeSubtree(representatives[0], -1);
             computeSubtree(representatives[1], -1);
             int newV1 = computeAnswer(representatives[0]);
@@ -102,7 +110,7 @@ public final class Graphs {
             return nComponents;
         }
 
-        private void initializeSumWeights(Graph weights) {
+        private void initializeSumWeights() {
             Arrays.fill(sumWeights, 0);
             for (int v1 = 0; v1 < weights.nVertices(); ++v1) {
                 int d1 = weights.degree(v1);
@@ -137,7 +145,7 @@ public final class Graphs {
         }
 
         private void computeAnswerDFS(int vertex, int parent, long answer, long onTop) {
-            if (forest.degree(vertex) < 3 && (bestIndex == -1 || bestAnswer > answer)) {
+            if (forest.degree(vertex) < maxDegree && (bestIndex == -1 || bestAnswer > answer)) {
                 bestAnswer = answer;
                 bestIndex = vertex;
             }

@@ -19,7 +19,7 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
     }
 
     @Override
-    public ResultSupplier construct(Graph weights) {
+    public ResultSupplier construct(Graph weights, int maxDegree) {
         return new ResultSupplier() {
             private final int n = weights.nVertices();
             private final int e = weights.nEdges();
@@ -55,14 +55,14 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
                     Graphs.shuffle(edges, random);
                 }
                 Arrays.fill(degree, 0);
-                BoundedSimpleGraph tree = new BoundedSimpleGraph(n, 3);
+                BoundedSimpleGraph tree = new BoundedSimpleGraph(n, maxDegree);
                 ds.reset();
                 // first, try adding the existing edges, starting from the heaviest one
                 for (int i = e - 1; i >= 0; --i) {
                     WeighedEdge curr = edges[i];
                     int src = curr.v1();
                     int dst = curr.v2();
-                    if (degree[src] < 3 && degree[dst] < 3 && ds.get(src) != ds.get(dst)) {
+                    if (degree[src] < maxDegree && degree[dst] < maxDegree && ds.get(src) != ds.get(dst)) {
                         ++degree[src];
                         ++degree[dst];
                         ds.unite(src, dst);
@@ -74,7 +74,7 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
                 while (tree.nEdges() + 1 < n) {
                     int a = random.nextInt(n);
                     int b = random.nextInt(n);
-                    if (degree[a] < 3 && degree[b] < 3 && ds.get(a) != ds.get(b)) {
+                    if (degree[a] < maxDegree && degree[b] < maxDegree && ds.get(a) != ds.get(b)) {
                         ++degree[a];
                         ++degree[b];
                         ds.unite(a, b);

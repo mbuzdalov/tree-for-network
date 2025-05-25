@@ -16,11 +16,16 @@ public final class GraphBuilder {
             throw new IllegalArgumentException("Vertex number(s) are negative");
         }
         int vMax = Math.max(v1, v2);
-        while (lastEnds.size() <= vMax) {
-            lastEnds.add(null);
-        }
+        setNumberVertices(vMax + 1);
         lastEnds.set(v1, new EdgeEnd(v2, weight, lastEnds.get(v1)));
         lastEnds.set(v2, new EdgeEnd(v1, weight, lastEnds.get(v2)));
+        return this;
+    }
+
+    public GraphBuilder setNumberVertices(int nVertices) {
+        while (lastEnds.size() < nVertices) {
+            lastEnds.add(null);
+        }
         return this;
     }
 

@@ -21,8 +21,8 @@ public final class RandomChoiceMutation implements Mutation<RandomChoiceMutation
     }
 
     @Override
-    public Context createContext(Graph weights) {
-        return new Context(weights);
+    public Context createContext(Graph weights, int maxDegree) {
+        return new Context(weights, maxDegree);
     }
 
     @Override
@@ -42,10 +42,10 @@ public final class RandomChoiceMutation implements Mutation<RandomChoiceMutation
         private final EdgeOptimalRelinkMutation.Context relink;
         private int nullMask = 0;
 
-        private Context(Graph weights) {
-            edgeSwitch = EdgeSwitchMutation.getInstance().createContext(weights);
-            subtree = SubtreeSwapMutation.getInstance().createContext(weights);
-            relink = EdgeOptimalRelinkMutation.getInstance().createContext(weights);
+        private Context(Graph weights, int maxDegree) {
+            edgeSwitch = EdgeSwitchMutation.getInstance().createContext(weights, maxDegree);
+            subtree = SubtreeSwapMutation.getInstance().createContext(weights, maxDegree);
+            relink = EdgeOptimalRelinkMutation.getInstance().createContext(weights, maxDegree);
         }
 
         private BestTreeAlgorithm.Result sample(BestTreeAlgorithm.Result prev,

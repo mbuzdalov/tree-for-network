@@ -25,8 +25,8 @@ public final class EdgeRandomRelinkMutation implements Mutation<EdgeRandomRelink
     }
 
     @Override
-    public Context createContext(Graph weights) {
-        return new Context(weights);
+    public Context createContext(Graph weights, int maxDegree) {
+        return new Context(weights, maxDegree);
     }
 
     @Override
@@ -53,7 +53,7 @@ public final class EdgeRandomRelinkMutation implements Mutation<EdgeRandomRelink
         if (nComponents != 2) {
             throw new AssertionError("A tree without one edge has to have two components");
         }
-        context.dropDegree3Vertices();
+        context.dropMaxDegreeVertices();
 
         // Connect with randomly sampled edge
         int newV1, newV2;
@@ -69,13 +69,15 @@ public final class EdgeRandomRelinkMutation implements Mutation<EdgeRandomRelink
 
     public static class Context {
         private final Graph weights;
+        private final int maxDegree;
         private final int[] color;
         private final int[][] components;
         private final int[] componentSizes;
         private BoundedSimpleGraph forest;
 
-        private Context(Graph weights) {
+        private Context(Graph weights, int maxDegree) {
             this.weights = weights;
+            this.maxDegree = maxDegree;
             int n = weights.nVertices();
             color = new int[n];
             components = new int[2][n];
@@ -112,13 +114,13 @@ public final class EdgeRandomRelinkMutation implements Mutation<EdgeRandomRelink
             return nComponents;
         }
 
-        private void dropDegree3Vertices() {
+        private void dropMaxDegreeVertices() {
             for (int c = 0; c < 2; ++c) {
                 int[] component = components[c];
                 int oldSize = componentSizes[c];
                 int newSize = 0;
                 for (int i = 0; i < oldSize; ++i) {
-                    if (forest.degree(component[i]) < 3) {
+                    if (forest.degree(component[i]) < maxDegree) {
                         component[newSize++] = component[i];
                     }
                 }
