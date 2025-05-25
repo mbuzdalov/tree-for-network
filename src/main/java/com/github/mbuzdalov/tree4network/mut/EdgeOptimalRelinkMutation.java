@@ -26,7 +26,7 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
 
     @Override
     public Context createContext(Graph weights) {
-        return new Context(weights.nVertices());
+        return new Context(weights);
     }
 
     @Override
@@ -35,7 +35,7 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
     }
 
     @Override
-    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
+    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Context context,
                                            CostComputationAlgorithm costAlgo, RandomGenerator random, Timer timer) {
         if (result.tree().nVertices() <= 2) {
             return null; // nothing to mutate
@@ -53,12 +53,12 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
 
         // Remove that edge
         tree.removeEdge(v1, v2);
-        Edge bestEdge = context.relink.solve(tree, weights);
+        Edge bestEdge = context.relink.solve(tree, context.weights);
         int newV1 = bestEdge.v1();
         int newV2 = bestEdge.v2();
         tree.addEdge(newV1, newV2);
         if (v1 != newV1 || v2 != newV2) {
-            long cost = costAlgo.compute(weights, tree);
+            long cost = costAlgo.compute(context.weights, tree);
             if (cost > result.cost()) {
                 throw new AssertionError("Relink does not work optimally: existing cost " + result.cost() + ", new cost " + cost);
             }
@@ -69,11 +69,14 @@ public final class EdgeOptimalRelinkMutation implements Mutation<EdgeOptimalReli
     }
 
     public static class Context {
+        private final Graph weights;
         private final int[] mutations;
         private int used;
         private final Graphs.OptimalRelink relink;
 
-        private Context(int n) {
+        private Context(Graph weights) {
+            this.weights = weights;
+            int n = weights.nVertices();
             mutations = new int[n - 1];
             Combinatorics.fillIdentityPermutation(mutations);
             relink = new Graphs.OptimalRelink(n);

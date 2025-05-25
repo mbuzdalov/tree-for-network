@@ -26,14 +26,14 @@ public final class EdgeRandomRelinkMutation implements Mutation<EdgeRandomRelink
 
     @Override
     public Context createContext(Graph weights) {
-        return new Context(weights.nVertices());
+        return new Context(weights);
     }
 
     @Override
     public void resetContext(Context context) {}
 
     @Override
-    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
+    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Context context,
                                            CostComputationAlgorithm costAlgo, RandomGenerator random, Timer timer) {
         if (result.tree().nVertices() <= 2) {
             return null; // nothing to mutate
@@ -63,17 +63,20 @@ public final class EdgeRandomRelinkMutation implements Mutation<EdgeRandomRelink
         } while (newV1 == v1 && newV2 == v2);
 
         tree.addEdge(newV1, newV2);
-        long cost = costAlgo.compute(weights, tree);
+        long cost = costAlgo.compute(context.weights, tree);
         return new BestTreeAlgorithm.Result(cost, tree);
     }
 
     public static class Context {
+        private final Graph weights;
         private final int[] color;
         private final int[][] components;
         private final int[] componentSizes;
         private BoundedSimpleGraph forest;
 
-        private Context(int n) {
+        private Context(Graph weights) {
+            this.weights = weights;
+            int n = weights.nVertices();
             color = new int[n];
             components = new int[2][n];
             componentSizes = new int[2];

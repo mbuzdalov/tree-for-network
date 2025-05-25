@@ -27,7 +27,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
 
     @Override
     public Context createContext(Graph weights) {
-        return new Context(weights.nVertices());
+        return new Context(weights);
     }
 
     @Override
@@ -36,7 +36,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
     }
 
     @Override
-    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
+    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Context context,
                                            CostComputationAlgorithm costAlgo, RandomGenerator random, Timer timer) {
         if (result.tree().nVertices() <= 2) {
             return null; // nothing to mutate
@@ -91,6 +91,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
         }
 
         long newCost = result.cost();
+        Graph weights = context.weights;
         int wDeg1 = weights.degree(v1);
         for (int i = 0; i < wDeg1; ++i) {
             int u1 = weights.getDestination(v1, i);
@@ -121,11 +122,15 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
     }
 
     public static class Context {
-        private Context(int n) {
+        private Context(Graph weights) {
+            this.weights = weights;
+            int n = weights.nVertices();
             mutations = new int[n - 1];
             Combinatorics.fillIdentityPermutation(mutations);
             visited = new boolean[n];
         }
+
+        private final Graph weights;
         private final int[] mutations;
         private final boolean[] visited;
         private int used;

@@ -24,7 +24,7 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
 
     @Override
     public Context createContext(Graph weights) {
-        return new Context(weights.nVertices());
+        return new Context(weights);
     }
 
     @Override
@@ -33,7 +33,7 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
     }
 
     @Override
-    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
+    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Context context,
                                            CostComputationAlgorithm costAlgo, RandomGenerator random, Timer timer) {
         if (result.tree().nVertices() <= 2) {
             return null;
@@ -51,7 +51,7 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
         }
 
         swapSubtrees(tree, mutation.v1(), mutation.v2());
-        return new BestTreeAlgorithm.Result(costAlgo.compute(weights, tree), tree);
+        return new BestTreeAlgorithm.Result(costAlgo.compute(context.weights, tree), tree);
     }
 
     private static void swapSubtrees(BoundedSimpleGraph tree, int v1, int v2) {
@@ -88,12 +88,14 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
     }
 
     public static final class Context {
+        private final Graph weights;
         private final Edge[] mutations;
         private final int nVertices;
         private int used;
 
-        private Context(int nVertices) {
-            this.nVertices = nVertices;
+        private Context(Graph weights) {
+            this.weights = weights;
+            this.nVertices = weights.nVertices();
             if (nVertices <= 1000) {
                 mutations = new Edge[nVertices * (nVertices - 1) / 2];
                 for (int v1 = 0, i = 0; v1 < nVertices; ++v1) {

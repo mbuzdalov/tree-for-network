@@ -40,7 +40,7 @@ public final class SimpleLocalSearch<C> implements BestTreeAlgorithm {
                     if (timer.shouldInterrupt()) {
                         return null;
                     }
-                    Result nextResult = mutation.mutate(lastResult, weights, context, costAlgo, random, timer);
+                    Result nextResult = mutation.mutate(lastResult, context, costAlgo, random, timer);
                     if (nextResult == null) {
                         // the mutation says it is done, need to restart
                         lastResult = null;

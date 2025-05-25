@@ -14,6 +14,6 @@ public interface Mutation<Context> {
 
     void resetContext(Context context);
 
-    BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
+    BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Context context,
                                     CostComputationAlgorithm costAlgo, RandomGenerator random, Timer timer);
 }

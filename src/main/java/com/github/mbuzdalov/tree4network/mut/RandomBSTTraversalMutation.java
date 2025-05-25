@@ -25,7 +25,7 @@ public final class RandomBSTTraversalMutation implements Mutation<RandomBSTTrave
 
     @Override
     public Context createContext(Graph weights) {
-        return new Context(weights.nVertices());
+        return new Context(weights);
     }
 
     @Override
@@ -34,23 +34,26 @@ public final class RandomBSTTraversalMutation implements Mutation<RandomBSTTrave
     }
 
     @Override
-    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
+    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Context context,
                                            CostComputationAlgorithm costAlgo, RandomGenerator random, Timer timer) {
         context.initPermutation(result.tree(), random);
-        if (context.offset == weights.nVertices()) {
+        if (context.offset == context.weights.nVertices()) {
             return result;
         } else {
-            return context.bst.construct(weights, context.permutation, context.offset, timer);
+            return context.bst.construct(context.weights, context.permutation, context.offset, timer);
         }
     }
 
     public static class Context {
+        private final Graph weights;
         private final BestBSTOverPermutation bst;
         private final int[] permutation;
         private final int[] previous;
         private int offset;
 
-        private Context(int n) {
+        private Context(Graph weights) {
+            this.weights = weights;
+            int n = weights.nVertices();
             bst = new BestBSTOverPermutation(n);
             permutation = new int[n];
             previous = new int[n];

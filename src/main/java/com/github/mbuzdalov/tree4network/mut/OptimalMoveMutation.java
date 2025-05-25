@@ -31,9 +31,9 @@ public final class OptimalMoveMutation implements Mutation<OptimalMoveMutation.C
     }
 
     @Override
-    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
+    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Context context,
                                            CostComputationAlgorithm costAlgo, RandomGenerator random, Timer timer) {
-        return context.sample(result, weights, costAlgo, random, timer);
+        return context.sample(result, costAlgo, random, timer);
     }
 
     public static final class Context {
@@ -47,17 +47,17 @@ public final class OptimalMoveMutation implements Mutation<OptimalMoveMutation.C
             bst = RandomBSTTraversalMutation.getInstance().createContext(weights);
         }
 
-        private BestTreeAlgorithm.Result sample(BestTreeAlgorithm.Result prev, Graph weights,
+        private BestTreeAlgorithm.Result sample(BestTreeAlgorithm.Result prev,
                                                 CostComputationAlgorithm costAlgo, RandomGenerator random, Timer timer) {
             if (canRelink) {
-                BestTreeAlgorithm.Result r = EdgeOptimalRelinkMutation.getInstance().mutate(prev, weights, relink, costAlgo, random, timer);
+                BestTreeAlgorithm.Result r = EdgeOptimalRelinkMutation.getInstance().mutate(prev, relink, costAlgo, random, timer);
                 if (r == null) {
                     canRelink = false;
                 } else {
                     return r;
                 }
             }
-            return RandomBSTTraversalMutation.getInstance().mutate(prev, weights, bst, costAlgo, random, timer);
+            return RandomBSTTraversalMutation.getInstance().mutate(prev, bst, costAlgo, random, timer);
         }
 
         private void reset() {

@@ -31,9 +31,9 @@ public final class RandomChoiceMutation implements Mutation<RandomChoiceMutation
     }
 
     @Override
-    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Graph weights, Context context,
+    public BestTreeAlgorithm.Result mutate(BestTreeAlgorithm.Result result, Context context,
                                            CostComputationAlgorithm costAlgo, RandomGenerator random, Timer timer) {
-        return context.sample(result, weights, costAlgo, random, timer);
+        return context.sample(result, costAlgo, random, timer);
     }
 
     public static final class Context {
@@ -48,15 +48,15 @@ public final class RandomChoiceMutation implements Mutation<RandomChoiceMutation
             relink = EdgeOptimalRelinkMutation.getInstance().createContext(weights);
         }
 
-        private BestTreeAlgorithm.Result sample(BestTreeAlgorithm.Result prev, Graph weights,
+        private BestTreeAlgorithm.Result sample(BestTreeAlgorithm.Result prev,
                                                 CostComputationAlgorithm costAlgo, RandomGenerator random, Timer timer) {
             while (nullMask != 7) {
                 int index = random.nextInt(3);
                 if ((nullMask & (1 << index)) == 0) {
                     BestTreeAlgorithm.Result result = switch (index) {
-                        case 0 -> EdgeSwitchMutation.getInstance().mutate(prev, weights, edgeSwitch, costAlgo, random, timer);
-                        case 1 -> SubtreeSwapMutation.getInstance().mutate(prev, weights, subtree, costAlgo, random, timer);
-                        default -> EdgeOptimalRelinkMutation.getInstance().mutate(prev, weights, relink, costAlgo, random, timer);
+                        case 0 -> EdgeSwitchMutation.getInstance().mutate(prev, edgeSwitch, costAlgo, random, timer);
+                        case 1 -> SubtreeSwapMutation.getInstance().mutate(prev, subtree, costAlgo, random, timer);
+                        default -> EdgeOptimalRelinkMutation.getInstance().mutate(prev, relink, costAlgo, random, timer);
                     };
                     if (result != null) {
                         return result;

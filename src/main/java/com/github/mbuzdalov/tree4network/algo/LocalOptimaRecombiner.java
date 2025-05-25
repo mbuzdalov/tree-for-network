@@ -46,7 +46,7 @@ public final class LocalOptimaRecombiner<C1, C2> implements BestTreeAlgorithm {
                     if (timer.shouldInterrupt()) {
                         return null;
                     }
-                    Result nextResult = mutation.mutate(lastResult, weights, mutationCtx, costAlgo, random, timer);
+                    Result nextResult = mutation.mutate(lastResult, mutationCtx, costAlgo, random, timer);
                     if (nextResult == null) {
                         // try to process the last result with crossover
                         if (bestKnownResult == null) {
