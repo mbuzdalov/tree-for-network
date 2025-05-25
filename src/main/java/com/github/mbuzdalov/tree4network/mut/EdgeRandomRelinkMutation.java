@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.mut;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
@@ -39,7 +39,7 @@ public final class EdgeRandomRelinkMutation implements Mutation<EdgeRandomRelink
             return null; // nothing to mutate
         }
 
-        BoundedForest tree = new BoundedForest(result.tree());
+        BoundedSimpleGraph tree = new BoundedSimpleGraph(result.tree());
         // Choose a random edge
         int flippedEdge = random.nextInt(tree.nEdges());
         Edge flippedEdgeV = Graphs.getNthEdge(tree, flippedEdge);
@@ -71,7 +71,7 @@ public final class EdgeRandomRelinkMutation implements Mutation<EdgeRandomRelink
         private final int[] color;
         private final int[][] components;
         private final int[] componentSizes;
-        private BoundedForest forest;
+        private BoundedSimpleGraph forest;
 
         private Context(int n) {
             color = new int[n];

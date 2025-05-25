@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.cost;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.GraphBuilder;
 import com.github.mbuzdalov.tree4network.util.DisjointSet;
@@ -10,6 +10,7 @@ import java.util.Random;
 public class CostPerformanceEvaluation {
     public static void main(String[] args) {
         int v = 1000;
+        int d = 3;
         CostComputationAlgorithm naive = NaiveCostComputationAlgorithm.getInstance();
         CostComputationAlgorithm rmq = new RMQCostComputationAlgorithm(v);
 
@@ -28,14 +29,14 @@ public class CostPerformanceEvaluation {
                     builder.addEdge(v1, v2, random.nextInt(1000));
                 }
                 Graph g = builder.result();
-                BoundedForest tree = new BoundedForest(v);
+                BoundedSimpleGraph tree = new BoundedSimpleGraph(v, d);
                 DisjointSet ds = new DisjointSet(v);
                 while (tree.nEdges() + 1 < v) {
                     int v1, v2;
                     do {
                         v1 = random.nextInt(v);
                         v2 = random.nextInt(v);
-                    } while (tree.degree(v1) == 3 || tree.degree(v2) == 3 || ds.get(v1) == ds.get(v2));
+                    } while (tree.degree(v1) == d || tree.degree(v2) == d || ds.get(v1) == ds.get(v2));
                     ds.unite(v1, v2);
                     tree.addEdge(v1, v2);
                 }

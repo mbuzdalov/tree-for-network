@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.mut;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
@@ -41,7 +41,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
         if (result.tree().nVertices() <= 2) {
             return null; // nothing to mutate
         }
-        BoundedForest tree = new BoundedForest(result.tree());
+        BoundedSimpleGraph tree = new BoundedSimpleGraph(result.tree());
 
         // Choose a random edge
         int flippedEdge = context.getMutation(random);
@@ -130,7 +130,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
         private final boolean[] visited;
         private int used;
 
-        private void markReachable(BoundedForest tree, int v) {
+        private void markReachable(BoundedSimpleGraph tree, int v) {
             Arrays.fill(visited, false);
             visited[v] = true;
             dfs(tree, v);
@@ -140,7 +140,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
             return visited[v];
         }
 
-        private void dfs(BoundedForest tree, int v) {
+        private void dfs(BoundedSimpleGraph tree, int v) {
             int nAdj = tree.degree(v);
             for (int i = 0; i < nAdj; ++i) {
                 int next = tree.getDestination(v, i);

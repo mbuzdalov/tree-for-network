@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.mut;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.BestBSTOverPermutation;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
@@ -62,7 +62,7 @@ public final class RandomBSTTraversalMutation implements Mutation<RandomBSTTrave
             Arrays.fill(previous, -1);
         }
 
-        private void initPermutation(BoundedForest f, RandomGenerator rg) {
+        private void initPermutation(BoundedSimpleGraph f, RandomGenerator rg) {
             int start;
             int n = f.nVertices();
             do {
@@ -80,7 +80,7 @@ public final class RandomBSTTraversalMutation implements Mutation<RandomBSTTrave
             }
         }
 
-        private void fillPermutation(BoundedForest f, int curr, int parent, RandomGenerator rg) {
+        private void fillPermutation(BoundedSimpleGraph f, int curr, int parent, RandomGenerator rg) {
             int next1 = -1, next2 = -1;
             int d = f.degree(curr);
             for (int i = 0; i < d; ++i) {

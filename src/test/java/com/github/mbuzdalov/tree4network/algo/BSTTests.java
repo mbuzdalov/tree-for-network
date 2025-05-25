@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.algo;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.GraphBuilder;
 import com.github.mbuzdalov.tree4network.cost.NaiveCostComputationAlgorithm;
@@ -16,7 +16,7 @@ public class BSTTests {
         BestTreeAlgorithm.Result result = solver.construct(g, order, 0, Timer.dummyTimer());
         Assert.assertNotNull(result);
         Assert.assertEquals(expected, result.cost());
-        BoundedForest tree = result.tree();
+        BoundedSimpleGraph tree = result.tree();
         Assert.assertEquals(expected, NaiveCostComputationAlgorithm.getInstance().compute(g, tree));
     }
 

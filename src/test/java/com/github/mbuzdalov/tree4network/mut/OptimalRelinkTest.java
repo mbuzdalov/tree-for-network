@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.mut;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.GraphBuilder;
 import com.github.mbuzdalov.tree4network.util.Edge;
@@ -15,12 +15,13 @@ public class OptimalRelinkTest {
                 .addEdge(1, 2, 10)
                 .result();
 
-        BoundedForest initialTree = new BoundedForest(4);
+        int d = 3;
+        BoundedSimpleGraph initialTree = new BoundedSimpleGraph(4, d);
         initialTree.addEdge(0, 1);
         initialTree.addEdge(0, 2);
         initialTree.addEdge(2, 3);
 
-        BoundedForest expectedTree = new BoundedForest(4);
+        BoundedSimpleGraph expectedTree = new BoundedSimpleGraph(4, d);
         expectedTree.addEdge(0, 1);
         expectedTree.addEdge(1, 2);
         expectedTree.addEdge(2, 3);

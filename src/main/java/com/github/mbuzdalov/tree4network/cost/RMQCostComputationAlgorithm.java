@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.cost;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.rmq.LinLogSpaceRMQ;
 
@@ -11,7 +11,7 @@ public final class RMQCostComputationAlgorithm extends CostComputationAlgorithm 
     private final int[] vertexIndices;
     private final LinLogSpaceRMQ rmq;
 
-    private BoundedForest tree;
+    private BoundedSimpleGraph tree;
     private int depthArrayIndex;
     private int depth;
 
@@ -22,7 +22,7 @@ public final class RMQCostComputationAlgorithm extends CostComputationAlgorithm 
     }
 
     @Override
-    public long compute(Graph weights, BoundedForest tree) {
+    public long compute(Graph weights, BoundedSimpleGraph tree) {
         if (weights.nVertices() != tree.nVertices()) {
             throw new IllegalArgumentException("Graph sizes do not match");
         }

@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.cost;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 
 import java.util.Arrays;
@@ -15,7 +15,7 @@ public final class NaiveCostComputationAlgorithm extends CostComputationAlgorith
     }
 
     @Override
-    public long compute(Graph weights, BoundedForest tree) {
+    public long compute(Graph weights, BoundedSimpleGraph tree) {
         if (weights.nVertices() != tree.nVertices()) {
             throw new IllegalArgumentException("Graph sizes do not match");
         }

@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.algo;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.DefaultCostComputationAlgorithm;
@@ -55,7 +55,7 @@ public final class BestMSTOverEdgeShuffle implements BestTreeAlgorithm {
                     Graphs.shuffle(edges, random);
                 }
                 Arrays.fill(degree, 0);
-                BoundedForest tree = new BoundedForest(n);
+                BoundedSimpleGraph tree = new BoundedSimpleGraph(n, 3);
                 ds.reset();
                 // first, try adding the existing edges, starting from the heaviest one
                 for (int i = e - 1; i >= 0; --i) {

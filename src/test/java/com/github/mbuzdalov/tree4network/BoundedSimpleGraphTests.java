@@ -3,11 +3,14 @@ package com.github.mbuzdalov.tree4network;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BoundedForestTests {
+public class BoundedSimpleGraphTests {
     @Test
     public void testEqualsAndHashCode() {
-        BoundedForest f1 = new BoundedForest(3);
-        BoundedForest f2 = new BoundedForest(3);
+        BoundedSimpleGraph f1 = new BoundedSimpleGraph(3, 3);
+        BoundedSimpleGraph f2 = new BoundedSimpleGraph(3, 3);
+
+        Assert.assertEquals(3, f1.maximumDegree());
+        Assert.assertEquals(3, f2.maximumDegree());
 
         f1.addEdge(0, 1);
         f1.addEdge(0, 2);
@@ -19,7 +22,7 @@ public class BoundedForestTests {
         Assert.assertEquals(f2, f1);
         Assert.assertEquals(f1.hashCode(), f2.hashCode());
 
-        BoundedForest f3 = new BoundedForest(3);
+        BoundedSimpleGraph f3 = new BoundedSimpleGraph(3, 3);
         f3.addEdge(0, 1);
         f3.addEdge(1, 2);
 

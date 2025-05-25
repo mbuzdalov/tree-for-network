@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.algo;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.util.Timer;
 
@@ -8,7 +8,7 @@ import java.util.function.BiConsumer;
 import java.util.random.RandomGenerator;
 
 public interface BestTreeAlgorithm {
-    record Result(long cost, BoundedForest tree) {}
+    record Result(long cost, BoundedSimpleGraph tree) {}
     record ExtendedResult(Result result, long nQueries) {}
 
     interface ResultSupplier {
@@ -18,7 +18,8 @@ public interface BestTreeAlgorithm {
     String getName();
     ResultSupplier construct(Graph weights);
 
-    default ExtendedResult solve(Graph weights, Timer timer, RandomGenerator random, BiConsumer<Long, Long> logger) {
+    default ExtendedResult solve(Graph weights,
+                                 Timer timer, RandomGenerator random, BiConsumer<Long, Long> logger) {
         ResultSupplier supplier = construct(weights);
         Result best = null;
         long nQueries = 0;

@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.algo;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.util.Combinatorics;
 import com.github.mbuzdalov.tree4network.util.Timer;
@@ -73,7 +73,7 @@ public final class BestBSTOverPermutation {
         return false;
     }
 
-    private static void reconstruct(int[][] roots, int[] order, int l, int r, BoundedForest tree) {
+    private static void reconstruct(int[][] roots, int[] order, int l, int r, BoundedSimpleGraph tree) {
         int m = roots[r][l];
         if (l < m) {
             reconstruct(roots, order, l, m - 1, tree);
@@ -130,7 +130,7 @@ public final class BestBSTOverPermutation {
             }
         }
 
-        BoundedForest forest = new BoundedForest(n);
+        BoundedSimpleGraph forest = new BoundedSimpleGraph(n, 3);
         reconstruct(roots, order, 0, n - 1, forest);
         return new BestTreeAlgorithm.Result(costs[n - 1][0], forest);
     }

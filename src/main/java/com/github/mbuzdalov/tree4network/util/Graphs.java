@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.util;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public final class Graphs {
         Combinatorics.shufflePart(edges, last, n, random);
     }
 
-    public static Edge getNthEdge(BoundedForest tree, int index) {
+    public static Edge getNthEdge(BoundedSimpleGraph tree, int index) {
         for (int v1 = 0; v1 < tree.nVertices(); ++v1) {
             int d = tree.degree(v1);
             for (int i = 0; i < d; ++i) {
@@ -42,7 +42,7 @@ public final class Graphs {
         private final int[] components, representatives;
         private final long[] sumWeights;
         private final long[] subtreeSum;
-        private BoundedForest forest;
+        private BoundedSimpleGraph forest;
         private long bestAnswer;
         private int bestIndex;
 
@@ -54,7 +54,7 @@ public final class Graphs {
             subtreeSum = new long[maxSize];
         }
 
-        public Edge solve(BoundedForest forest, Graph weights) {
+        public Edge solve(BoundedSimpleGraph forest, Graph weights) {
             this.forest = forest;
 
             int nComponents = markComponents();

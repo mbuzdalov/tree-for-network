@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.xover;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
@@ -27,7 +27,7 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
 
     @Override
     public Context createContext(Graph weights) {
-        return new Context(weights);
+        return new Context(weights, 3);
     }
 
     @Override
@@ -41,10 +41,11 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
                                               RandomGenerator random, Timer timer) {
         Graphs.shuffle(context.edges, random);
         int n = weights.nVertices();
-        BoundedForest tree = new BoundedForest(n);
+        int d = context.maximumDegree;
+        BoundedSimpleGraph tree = new BoundedSimpleGraph(n, d);
 
-        BoundedForest a = resultA.tree();
-        BoundedForest b = resultB.tree();
+        BoundedSimpleGraph a = resultA.tree();
+        BoundedSimpleGraph b = resultB.tree();
         DisjointSet ds = context.ds;
         ds.reset();
 
@@ -53,7 +54,7 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
             WeighedEdge e = context.edges[ei];
             int v1 = e.v1();
             int v2 = e.v2();
-            if (tree.degree(v1) < 3 && tree.degree(v2) < 3 && ds.get(v1) != ds.get(v2) && (a.hasEdge(v1, v2) || b.hasEdge(v1, v2))) {
+            if (tree.degree(v1) < d && tree.degree(v2) < d && ds.get(v1) != ds.get(v2) && (a.hasEdge(v1, v2) || b.hasEdge(v1, v2))) {
                 ds.unite(v1, v2);
                 tree.addEdge(v1, v2);
             }
@@ -63,7 +64,7 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
             WeighedEdge e = context.edges[ei];
             int v1 = e.v1();
             int v2 = e.v2();
-            if (tree.degree(v1) < 3 && tree.degree(v2) < 3 && ds.get(v1) != ds.get(v2)) {
+            if (tree.degree(v1) < d && tree.degree(v2) < d && ds.get(v1) != ds.get(v2)) {
                 ds.unite(v1, v2);
                 tree.addEdge(v1, v2);
             }
@@ -72,7 +73,7 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
         while (tree.nEdges() + 1 < n) {
             int v1 = random.nextInt(n);
             int v2 = random.nextInt(n);
-            if (tree.degree(v1) < 3 && tree.degree(v2) < 3 && ds.get(v1) != ds.get(v2)) {
+            if (tree.degree(v1) < d && tree.degree(v2) < d && ds.get(v1) != ds.get(v2)) {
                 ds.unite(v1, v2);
                 tree.addEdge(v1, v2);
             }
@@ -86,6 +87,7 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
     public static class Context {
         private final DisjointSet ds;
         private final WeighedEdge[] edges;
+        private final int maximumDegree;
 
         private final int[] counts = new int[4];
         private long bestCrossover = Long.MAX_VALUE;
@@ -107,8 +109,9 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
             System.out.println("Counts: " + Arrays.toString(counts) + ", best crossover: " + bestCrossover);
         }
 
-        private Context(Graph g) {
+        private Context(Graph g, int maximumDegree) {
             int n = g.nVertices();
+            this.maximumDegree = maximumDegree;
             ds = new DisjointSet(n);
             edges = new WeighedEdge[g.nEdges()];
             for (int i = 0, ei = 0; i < n; ++i) {

@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.cost;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.GraphBuilder;
 import com.github.mbuzdalov.tree4network.util.DisjointSet;
@@ -14,6 +14,7 @@ public class CostTortureTest {
     public void costTortureTest() {
         int maxV = 1000;
         int maxE = 10000;
+        int maxD = 3;
         CostComputationAlgorithm naive = NaiveCostComputationAlgorithm.getInstance();
         CostComputationAlgorithm rmq = new RMQCostComputationAlgorithm(maxV);
 
@@ -32,7 +33,7 @@ public class CostTortureTest {
                 builder.addEdge(v1, v2, random.nextInt(1000));
             }
             Graph g = builder.result();
-            BoundedForest tree = new BoundedForest(v);
+            BoundedSimpleGraph tree = new BoundedSimpleGraph(v, maxD);
             DisjointSet ds = new DisjointSet(v);
             while (tree.nEdges() + 1 < v) {
                 int v1, v2;

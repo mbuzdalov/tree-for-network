@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.xover;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
@@ -26,7 +26,7 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
 
     @Override
     public Context createContext(Graph weights) {
-        return new Context(weights.nVertices());
+        return new Context(weights.nVertices(), 3);
     }
 
     @Override
@@ -42,7 +42,7 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
         context.load(resultA.tree());
         context.load(resultB.tree());
         int n = weights.nVertices();
-        BoundedForest tree = context.generate(n, random);
+        BoundedSimpleGraph tree = context.generate(n, random);
 
         long cost = costAlgo.compute(weights, tree);
         context.consume(resultA.cost(), resultB.cost(), cost);
@@ -52,6 +52,7 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
     public static class Context {
         private final int[] edgeStart, edgeEnd;
         private final DisjointSet ds;
+        private final int maximumDegree;
         private int nEdges;
 
         private final int[] counts = new int[4];
@@ -74,7 +75,8 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
             System.out.println("Counts: " + Arrays.toString(counts) + ", best crossover: " + bestCrossover);
         }
 
-        private Context(int n) {
+        private Context(int n, int maximumDegree) {
+            this.maximumDegree = maximumDegree;
             edgeStart = new int[2 * n];
             edgeEnd = new int[2 * n];
             ds = new DisjointSet(n);
@@ -85,7 +87,7 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
             ds.reset();
         }
 
-        private void load(BoundedForest graph) {
+        private void load(BoundedSimpleGraph graph) {
             int n = graph.nVertices();
             for (int v = 0; v < n; ++v) {
                 int d = graph.degree(v);
@@ -100,12 +102,12 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
             }
         }
 
-        private BoundedForest generate(int n, RandomGenerator random) {
-            BoundedForest result;
+        private BoundedSimpleGraph generate(int n, RandomGenerator random) {
+            BoundedSimpleGraph result;
             int baseNEdges = nEdges;
             int attempts = MAX_RESAMPLE_ATTEMPTS;
             do {
-                result = new BoundedForest(n);
+                result = new BoundedSimpleGraph(n, maximumDegree);
                 ds.reset();
                 // Phase 1: sample random edges from the parents
                 while (result.nEdges() + 1 < n && nEdges > 0) {
@@ -120,25 +122,25 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
             return result;
         }
 
-        private void sample(RandomGenerator random, BoundedForest target) {
+        private void sample(RandomGenerator random, BoundedSimpleGraph target) {
             int index = random.nextInt(nEdges);
             int src = edgeStart[index];
             int dst = edgeEnd[index];
             --nEdges;
             edgeStart[index] = edgeStart[nEdges];
             edgeEnd[index] = edgeEnd[nEdges];
-            if (ds.get(src) != ds.get(dst) && target.degree(src) < 3 && target.degree(dst) < 3) {
+            if (ds.get(src) != ds.get(dst) && target.degree(src) < maximumDegree && target.degree(dst) < maximumDegree) {
                 ds.unite(src, dst);
                 target.addEdge(src, dst);
             }
         }
 
-        private void finish(RandomGenerator random, BoundedForest target) {
+        private void finish(RandomGenerator random, BoundedSimpleGraph target) {
             int n = target.nVertices();
             while (target.nEdges() + 1 < n) {
                 int a = random.nextInt(n);
                 int b = random.nextInt(n);
-                if (ds.get(a) != ds.get(b) && target.degree(a) < 3 && target.degree(b) < 3) {
+                if (ds.get(a) != ds.get(b) && target.degree(a) < maximumDegree && target.degree(b) < maximumDegree) {
                     target.addEdge(a, b);
                     ds.unite(a, b);
                 }

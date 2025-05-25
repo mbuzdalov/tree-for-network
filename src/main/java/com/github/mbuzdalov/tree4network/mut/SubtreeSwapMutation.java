@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.mut;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
 import com.github.mbuzdalov.tree4network.cost.CostComputationAlgorithm;
@@ -39,7 +39,7 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
             return null;
         }
 
-        BoundedForest tree = new BoundedForest(result.tree());
+        BoundedSimpleGraph tree = new BoundedSimpleGraph(result.tree());
 
         Edge mutation;
         do {
@@ -54,7 +54,7 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
         return new BestTreeAlgorithm.Result(costAlgo.compute(weights, tree), tree);
     }
 
-    private static void swapSubtrees(BoundedForest tree, int v1, int v2) {
+    private static void swapSubtrees(BoundedSimpleGraph tree, int v1, int v2) {
         int d = tree.degree(v1);
         for (int i = 0; i < d; ++i) {
             int next = tree.getDestination(v1, i);
@@ -70,7 +70,7 @@ public final class SubtreeSwapMutation implements Mutation<SubtreeSwapMutation.C
         throw new AssertionError();
     }
 
-    private static int dfs(BoundedForest tree, int vertex, int parent, int stopVertex) {
+    private static int dfs(BoundedSimpleGraph tree, int vertex, int parent, int stopVertex) {
         int d = tree.degree(vertex);
         for (int i = 0; i < d; ++i) {
             int next = tree.getDestination(vertex, i);

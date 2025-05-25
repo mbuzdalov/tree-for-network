@@ -1,6 +1,6 @@
 package com.github.mbuzdalov.tree4network.xover;
 
-import com.github.mbuzdalov.tree4network.BoundedForest;
+import com.github.mbuzdalov.tree4network.BoundedSimpleGraph;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.GraphBuilder;
 import com.github.mbuzdalov.tree4network.algo.BestTreeAlgorithm;
@@ -26,7 +26,7 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
 
     @Override
     public Context createContext(Graph weights) {
-        return new Context(weights.nVertices());
+        return new Context(weights.nVertices(), 3);
     }
 
     @Override
@@ -39,9 +39,9 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
                                               Graph weights, Context context, CostComputationAlgorithm costAlgo,
                                               RandomGenerator random, Timer timer) {
         int n = weights.nVertices();
-        BoundedForest graphA = resultA.tree();
-        BoundedForest graphB = resultB.tree();
-        BoundedForest common = new BoundedForest(n);
+        BoundedSimpleGraph graphA = resultA.tree();
+        BoundedSimpleGraph graphB = resultB.tree();
+        BoundedSimpleGraph common = new BoundedSimpleGraph(n, context.maximumDegree);
         GraphBuilder xorBuilder = new GraphBuilder();
         for (int v = 0; v < n; ++v) {
             int dA = graphA.degree(v);
@@ -91,11 +91,13 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
         private long bestCrossoverCost = Long.MAX_VALUE;
         private CostComputationAlgorithm costAlgo;
         private Graph weights;
+        private final int maximumDegree;
 
         private int nRuns, nImprovements, sumComponents;
 
-        private Context(int n) {
+        private Context(int n, int d) {
             component = new int[n];
+            maximumDegree = d;
         }
 
         private void reset() {
@@ -138,7 +140,7 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
             this.costAlgo = costAlgo;
         }
 
-        private void go(Graph xor, BoundedForest current, int nComp, int maxComp, Timer timer) {
+        private void go(Graph xor, BoundedSimpleGraph current, int nComp, int maxComp, Timer timer) {
             if (timer.shouldInterrupt()) {
                 return;
             }
@@ -148,7 +150,7 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
                     if (cost < bestResult.cost()) {
                         bestCrossoverCost = cost;
                         System.out.print(" [" + bestResult.cost() + " => " + cost + "]");
-                        bestResult = new BestTreeAlgorithm.Result(cost, new BoundedForest(current));
+                        bestResult = new BestTreeAlgorithm.Result(cost, new BoundedSimpleGraph(current));
                     }
                 }
             } else {
@@ -161,7 +163,7 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
                             ds.unite(v, current.getDestination(v, e));
                         }
                     }
-                    BoundedForest next = new BoundedForest(current);
+                    BoundedSimpleGraph next = new BoundedSimpleGraph(current);
                     boolean componentOK = true;
                     componentAssemblyLoop:
                     for (int v = 0; v < n; ++v) {
@@ -171,7 +173,7 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
                                 int w = xor.getDestination(v, e);
                                 if (component[w] != nComp) throw new AssertionError();
                                 if (v < w && xor.getWeight(v, e) == vComp) {
-                                    if (ds.get(v) == ds.get(w) || next.degree(v) == 3 || next.degree(w) == 3) {
+                                    if (ds.get(v) == ds.get(w) || next.degree(v) == maximumDegree || next.degree(w) == maximumDegree) {
                                         // fail
                                         componentOK = false;
                                         break componentAssemblyLoop;
