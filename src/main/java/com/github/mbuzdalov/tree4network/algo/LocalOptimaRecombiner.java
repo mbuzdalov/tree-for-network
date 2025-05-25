@@ -56,7 +56,7 @@ public final class LocalOptimaRecombiner<C1, C2> implements BestTreeAlgorithm {
                             return next(timer, random);
                         } else {
                             // run the crossover between the best result and the last result
-                            Result crossoverResult = crossover.crossover(bestKnownResult, lastResult, weights, crossoverCtx, costAlgo, random, timer);
+                            Result crossoverResult = crossover.crossover(bestKnownResult, lastResult, crossoverCtx, costAlgo, random, timer);
                             // update the best result with the last one after we are done with the crossover
                             if (bestKnownResult.cost() > lastResult.cost()) {
                                 bestKnownResult = lastResult;

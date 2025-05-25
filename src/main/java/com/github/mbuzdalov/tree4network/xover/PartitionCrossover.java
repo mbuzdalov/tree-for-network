@@ -26,7 +26,7 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
 
     @Override
     public Context createContext(Graph weights) {
-        return new Context(weights.nVertices(), 3);
+        return new Context(weights, 3);
     }
 
     @Override
@@ -36,9 +36,9 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
 
     @Override
     public BestTreeAlgorithm.Result crossover(BestTreeAlgorithm.Result resultA, BestTreeAlgorithm.Result resultB,
-                                              Graph weights, Context context, CostComputationAlgorithm costAlgo,
+                                              Context context, CostComputationAlgorithm costAlgo,
                                               RandomGenerator random, Timer timer) {
-        int n = weights.nVertices();
+        int n = context.weights.nVertices();
         BoundedSimpleGraph graphA = resultA.tree();
         BoundedSimpleGraph graphB = resultB.tree();
         BoundedSimpleGraph common = new BoundedSimpleGraph(n, context.maximumDegree);
@@ -68,7 +68,7 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
         Graph xor = xorBuilder.result();
         context.reset();
         int nComponents = context.nComponents(xor);
-        context.setInitResults(resultA, resultB, weights, costAlgo);
+        context.setInitResults(resultA, resultB, costAlgo);
         System.out.print("Common edges: " + common.nEdges() + ", xor edges: " + xor.nEdges() + ", xor components: " + nComponents + ":");
         if (nComponents > 1) {
             context.go(xor, common, 1, nComponents, timer);
@@ -86,16 +86,18 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
     }
 
     public static class Context {
+        private final Graph weights;
         private final int[] component;
         private BestTreeAlgorithm.Result bestResult;
         private long bestCrossoverCost = Long.MAX_VALUE;
         private CostComputationAlgorithm costAlgo;
-        private Graph weights;
         private final int maximumDegree;
 
         private int nRuns, nImprovements, sumComponents;
 
-        private Context(int n, int d) {
+        private Context(Graph weights, int d) {
+            this.weights = weights;
+            int n = weights.nVertices();
             component = new int[n];
             maximumDegree = d;
         }
@@ -130,13 +132,12 @@ public final class PartitionCrossover implements Crossover<PartitionCrossover.Co
         }
 
         private void setInitResults(BestTreeAlgorithm.Result a, BestTreeAlgorithm.Result b,
-                                    Graph weights, CostComputationAlgorithm costAlgo) {
+                                    CostComputationAlgorithm costAlgo) {
             if (a.cost() < b.cost()) {
                 bestResult = a;
             } else {
                 bestResult = b;
             }
-            this.weights = weights;
             this.costAlgo = costAlgo;
         }
 

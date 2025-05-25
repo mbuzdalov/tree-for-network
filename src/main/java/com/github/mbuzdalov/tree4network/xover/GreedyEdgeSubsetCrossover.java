@@ -37,10 +37,10 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
 
     @Override
     public BestTreeAlgorithm.Result crossover(BestTreeAlgorithm.Result resultA, BestTreeAlgorithm.Result resultB,
-                                              Graph weights, Context context, CostComputationAlgorithm costAlgo,
+                                              Context context, CostComputationAlgorithm costAlgo,
                                               RandomGenerator random, Timer timer) {
         Graphs.shuffle(context.edges, random);
-        int n = weights.nVertices();
+        int n = context.weights.nVertices();
         int d = context.maximumDegree;
         BoundedSimpleGraph tree = new BoundedSimpleGraph(n, d);
 
@@ -79,12 +79,13 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
             }
         }
 
-        long cost = costAlgo.compute(weights, tree);
+        long cost = costAlgo.compute(context.weights, tree);
         context.consume(resultA.cost(), resultB.cost(), cost);
         return new BestTreeAlgorithm.Result(cost, tree);
     }
 
     public static class Context {
+        private final Graph weights;
         private final DisjointSet ds;
         private final WeighedEdge[] edges;
         private final int maximumDegree;
@@ -111,6 +112,7 @@ public final class GreedyEdgeSubsetCrossover implements Crossover<GreedyEdgeSubs
 
         private Context(Graph g, int maximumDegree) {
             int n = g.nVertices();
+            this.weights = g;
             this.maximumDegree = maximumDegree;
             ds = new DisjointSet(n);
             edges = new WeighedEdge[g.nEdges()];

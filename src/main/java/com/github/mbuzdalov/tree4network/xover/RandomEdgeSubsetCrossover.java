@@ -26,7 +26,7 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
 
     @Override
     public Context createContext(Graph weights) {
-        return new Context(weights.nVertices(), 3);
+        return new Context(weights, 3);
     }
 
     @Override
@@ -36,20 +36,21 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
 
     @Override
     public BestTreeAlgorithm.Result crossover(BestTreeAlgorithm.Result resultA, BestTreeAlgorithm.Result resultB,
-                                              Graph weights, Context context, CostComputationAlgorithm costAlgo,
+                                              Context context, CostComputationAlgorithm costAlgo,
                                               RandomGenerator random, Timer timer) {
         context.reset();
         context.load(resultA.tree());
         context.load(resultB.tree());
-        int n = weights.nVertices();
+        int n = context.weights.nVertices();
         BoundedSimpleGraph tree = context.generate(n, random);
 
-        long cost = costAlgo.compute(weights, tree);
+        long cost = costAlgo.compute(context.weights, tree);
         context.consume(resultA.cost(), resultB.cost(), cost);
         return new BestTreeAlgorithm.Result(cost, tree);
     }
 
     public static class Context {
+        private final Graph weights;
         private final int[] edgeStart, edgeEnd;
         private final DisjointSet ds;
         private final int maximumDegree;
@@ -75,7 +76,9 @@ public final class RandomEdgeSubsetCrossover implements Crossover<RandomEdgeSubs
             System.out.println("Counts: " + Arrays.toString(counts) + ", best crossover: " + bestCrossover);
         }
 
-        private Context(int n, int maximumDegree) {
+        private Context(Graph weights, int maximumDegree) {
+            this.weights = weights;
+            int n = weights.nVertices();
             this.maximumDegree = maximumDegree;
             edgeStart = new int[2 * n];
             edgeEnd = new int[2 * n];

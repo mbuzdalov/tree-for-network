@@ -15,6 +15,6 @@ public interface Crossover<Context> {
     void resetContext(Context context);
 
     BestTreeAlgorithm.Result crossover(BestTreeAlgorithm.Result resultA, BestTreeAlgorithm.Result resultB,
-                                       Graph weights, Context context, CostComputationAlgorithm costAlgo,
+                                       Context context, CostComputationAlgorithm costAlgo,
                                        RandomGenerator random, Timer timer);
 }
