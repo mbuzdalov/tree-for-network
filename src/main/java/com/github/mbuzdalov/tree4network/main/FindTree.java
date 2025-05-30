@@ -1,5 +1,6 @@
-package com.github.mbuzdalov.tree4network;
+package com.github.mbuzdalov.tree4network.main;
 
+import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.*;
 import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
 import com.github.mbuzdalov.tree4network.mut.*;
@@ -19,7 +20,7 @@ import java.util.Optional;
 import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
 
-public class Main {
+public class FindTree {
     // This is JDK 17 default
     private static final RandomGeneratorFactory<RandomGenerator> factory = RandomGeneratorFactory.of("L32X64MixRandom");
 

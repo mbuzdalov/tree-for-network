@@ -17,7 +17,7 @@ The project does not have any non-test dependencies, so this jar file is enough 
 The project uses some Java 17 features, such as the new `java.util.RandomGenerator` interface,
 and Maven builds for Java 17 too.
 
-The entry point is `com.github.mbuzdalov.tree4network.Main`, and it is designed to perform a single run
+The entry point is `com.github.mbuzdalov.tree4network.main.FindTree`, and it is designed to perform a single run
 of a single algorithm on a single instance in a single thread (not including garbage collection threads).
 The callers may have fine-grained control over what exactly is run how exactly (which CPUs to use, etc.).
 
