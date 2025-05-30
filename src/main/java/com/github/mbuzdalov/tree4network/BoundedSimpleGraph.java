@@ -6,7 +6,7 @@ public final class BoundedSimpleGraph {
     private static final boolean DEBUG_CHECKS = false;
 
     private final int maxDegreePlusOne;
-    private final int[] state; // state[0] is degree, state[1..3] are adjacent vertices
+    private final int[] state; // state[0] is degree, state[1..d] are adjacent vertices
     private int nEdges;
 
     public BoundedSimpleGraph(int n, int maxDegree) {
