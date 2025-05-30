@@ -24,6 +24,28 @@ public final class BoundedSimpleGraph {
         nEdges = other.nEdges;
     }
 
+    public BoundedSimpleGraph copyWithNewMaximumDegree(int newMaxDegree) {
+        int myMaxDegree = maximumDegree();
+        if (myMaxDegree == newMaxDegree) {
+            return new BoundedSimpleGraph(this);
+        } else if (myMaxDegree > newMaxDegree) {
+            throw new IllegalArgumentException("My maximum degree is " + myMaxDegree + ", cannot reduce to " + newMaxDegree);
+        } else {
+            int n = nVertices();
+            BoundedSimpleGraph rv = new BoundedSimpleGraph(n, newMaxDegree);
+            for (int i = 0; i < n; ++i) {
+                int d = degree(i);
+                for (int j = 0; j < d; ++j) {
+                    int next = getDestination(i, j);
+                    if (next > i) {
+                        rv.addEdge(i, next);
+                    }
+                }
+            }
+            return rv;
+        }
+    }
+
     public int maximumDegree() {
         return maxDegreePlusOne - 1;
     }
