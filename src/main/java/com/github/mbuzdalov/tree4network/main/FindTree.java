@@ -3,11 +3,7 @@ package com.github.mbuzdalov.tree4network.main;
 import com.github.mbuzdalov.tree4network.Graph;
 import com.github.mbuzdalov.tree4network.algo.*;
 import com.github.mbuzdalov.tree4network.io.GraphFromCSV;
-import com.github.mbuzdalov.tree4network.mut.*;
 import com.github.mbuzdalov.tree4network.util.Timer;
-import com.github.mbuzdalov.tree4network.xover.PartitionCrossover;
-import com.github.mbuzdalov.tree4network.xover.RandomEdgeSubsetCrossover;
-import com.github.mbuzdalov.tree4network.xover.GreedyEdgeSubsetCrossover;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -24,58 +20,9 @@ public class FindTree {
     // This is JDK 17 default
     private static final RandomGeneratorFactory<RandomGenerator> factory = RandomGeneratorFactory.of("L32X64MixRandom");
 
-    private record NamedAlgorithm(String name, BestTreeAlgorithm algorithm) {}
     private record NamedGraph(String name, Graph graph) {}
 
-    private static final List<NamedAlgorithm> algorithms = List.of(
-            new NamedAlgorithm("MST", new BestMSTOverEdgeShuffle()),
-            new NamedAlgorithm("BST/rand", new BestBSTOverRandomPermutations()),
-            new NamedAlgorithm("BST/next", new BestBSTOverAllPermutations()),
-            new NamedAlgorithm("MST+switch", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeSwitchMutation.getInstance())),
-            new NamedAlgorithm("MST+subtree", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), SubtreeSwapMutation.getInstance())),
-            new NamedAlgorithm("MST+replaceR", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeRandomRelinkMutation.getInstance())),
-            new NamedAlgorithm("MST+replaceO", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), EdgeOptimalRelinkMutation.getInstance())),
-            new NamedAlgorithm("MST+replaceOB", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), OptimalMoveMutation.getInstance())),
-            new NamedAlgorithm("MST+bstMut", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), RandomBSTTraversalMutation.getInstance())),
-            new NamedAlgorithm("MST+random", new SimpleLocalSearch<>(new BestMSTOverEdgeShuffle(), RandomChoiceMutation.getInstance())),
-            new NamedAlgorithm("BST+switch", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeSwitchMutation.getInstance())),
-            new NamedAlgorithm("BST+subtree", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), SubtreeSwapMutation.getInstance())),
-            new NamedAlgorithm("BST+replaceR", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeRandomRelinkMutation.getInstance())),
-            new NamedAlgorithm("BST+replaceO", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), EdgeOptimalRelinkMutation.getInstance())),
-            new NamedAlgorithm("BST+replaceOB", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), OptimalMoveMutation.getInstance())),
-            new NamedAlgorithm("BST+random", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), RandomChoiceMutation.getInstance())),
-            new NamedAlgorithm("BST+bstMut", new SimpleLocalSearch<>(new BestBSTOverRandomPermutations(), RandomBSTTraversalMutation.getInstance())),
-
-            new NamedAlgorithm("MST+switch+randomES", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
-                    EdgeSwitchMutation.getInstance(), RandomEdgeSubsetCrossover.getInstance())),
-            new NamedAlgorithm("MST+replaceO+randomES", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
-                    EdgeOptimalRelinkMutation.getInstance(), RandomEdgeSubsetCrossover.getInstance())),
-            new NamedAlgorithm("BST+switch+randomES", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
-                    EdgeSwitchMutation.getInstance(), RandomEdgeSubsetCrossover.getInstance())),
-            new NamedAlgorithm("BST+replaceO+randomES", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
-                    EdgeOptimalRelinkMutation.getInstance(), RandomEdgeSubsetCrossover.getInstance())),
-
-            new NamedAlgorithm("MST+switch+greedyES", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
-                    EdgeSwitchMutation.getInstance(), GreedyEdgeSubsetCrossover.getInstance())),
-            new NamedAlgorithm("MST+replaceO+greedyES", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
-                    EdgeOptimalRelinkMutation.getInstance(), GreedyEdgeSubsetCrossover.getInstance())),
-            new NamedAlgorithm("BST+switch+greedyES", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
-                    EdgeSwitchMutation.getInstance(), GreedyEdgeSubsetCrossover.getInstance())),
-            new NamedAlgorithm("BST+replaceO+greedyES", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
-                    EdgeOptimalRelinkMutation.getInstance(), GreedyEdgeSubsetCrossover.getInstance())),
-
-            new NamedAlgorithm("MST+switch+PX", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
-                    EdgeSwitchMutation.getInstance(), PartitionCrossover.getInstance())),
-            new NamedAlgorithm("MST+replaceO+PX", new LocalOptimaRecombiner<>(new BestMSTOverEdgeShuffle(),
-                    EdgeOptimalRelinkMutation.getInstance(), PartitionCrossover.getInstance())),
-            new NamedAlgorithm("BST+switch+PX", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
-                    EdgeSwitchMutation.getInstance(), PartitionCrossover.getInstance())),
-            new NamedAlgorithm("BST+replaceO+PX", new LocalOptimaRecombiner<>(new BestBSTOverRandomPermutations(),
-                    EdgeOptimalRelinkMutation.getInstance(), PartitionCrossover.getInstance()))
-
-    );
-
-    private record Task(NamedGraph graph, NamedAlgorithm algo, int maxDegree,
+    private record Task(NamedGraph graph, NamedBestTreeAlgorithm algo, int maxDegree,
                         String runID, long timeLimitMillis, PrintWriter log) implements Runnable {
         private void writeFitness(long time, long fitness) {
             log.println(graph.name() + "," + algo.name() + "," + maxDegree + "," + runID + "," + time + "," + fitness);
@@ -117,6 +64,7 @@ public class FindTree {
         System.err.println("  <timeout>      the maximum runtime, in seconds");
         System.err.println("  <fitness-log>  the file for fitness trajectory logging");
         System.err.println("Available algorithms are: ");
+        List<NamedBestTreeAlgorithm> algorithms = NamedBestTreeAlgorithm.algorithms();
         for (int i = 0; i < algorithms.size(); ++i) {
             System.err.print(i == 0 ? "  " : ", ");
             System.err.print(algorithms.get(i).name());
@@ -125,8 +73,8 @@ public class FindTree {
         System.exit(1);
     }
 
-    private static NamedAlgorithm getAlgorithm(String algoName) {
-        Optional<NamedAlgorithm> maybeAlgo = algorithms
+    private static NamedBestTreeAlgorithm getAlgorithm(String algoName) {
+        Optional<NamedBestTreeAlgorithm> maybeAlgo = NamedBestTreeAlgorithm.algorithms()
                 .stream()
                 .filter(a -> a.name().equals(algoName))
                 .findFirst();
@@ -191,7 +139,7 @@ public class FindTree {
             return;
         }
 
-        NamedAlgorithm algo = getAlgorithm(args[0]);
+        NamedBestTreeAlgorithm algo = getAlgorithm(args[0]);
         NamedGraph graph = getGraph(args[1]);
         int maxDegree = getMaxDegree(args[2]);
         String runID = args[3];
