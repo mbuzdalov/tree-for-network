@@ -16,7 +16,10 @@ import java.util.Optional;
 import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
 
-public class FindTree {
+public final class FindTree {
+    // this is a main-only class
+    private FindTree() {}
+
     // This is JDK 17 default
     private static final RandomGeneratorFactory<RandomGenerator> factory = RandomGeneratorFactory.of("L32X64MixRandom");
 
