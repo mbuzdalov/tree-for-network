@@ -15,7 +15,7 @@ public class OptimalRelinkTest {
         int d = 3;
         Graph weights = new GraphBuilder()
                 .addEdge(1, 2, 10)
-                .setNumberVertices(n)
+                .setNumberOfVertices(n)
                 .result();
 
         BoundedSimpleGraph initialTree = new BoundedSimpleGraph(n, d);
