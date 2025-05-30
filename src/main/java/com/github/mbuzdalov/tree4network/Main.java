@@ -124,8 +124,7 @@ public class Main {
         System.exit(1);
     }
 
-    private static NamedAlgorithm getAlgorithm(String[] args) {
-        String algoName = args[0];
+    private static NamedAlgorithm getAlgorithm(String algoName) {
         Optional<NamedAlgorithm> maybeAlgo = algorithms
                 .stream()
                 .filter(a -> a.name().equals(algoName))
@@ -138,16 +137,15 @@ public class Main {
         return maybeAlgo.get();
     }
 
-    private static NamedGraph getGraph(String[] args) {
-        String fileName = args[1];
+    private static NamedGraph getGraph(String filename) {
         try {
-            File file = new File(fileName);
+            File file = new File(filename);
             Graph g = GraphFromCSV.fromGZippedFile(file);
             String name = file.getName();
             name = name.substring(0, name.indexOf(".csv.gz"));
             return new NamedGraph(name, g);
         } catch (Throwable th) {
-            System.err.println("Error: cannot read graph '" + fileName + "'");
+            System.err.println("Error: cannot read graph '" + filename + "'");
             th.printStackTrace(System.err);
             usage();
             throw new IllegalStateException("System.exit(1) failed");
@@ -192,8 +190,8 @@ public class Main {
             return;
         }
 
-        NamedAlgorithm algo = getAlgorithm(args);
-        NamedGraph graph = getGraph(args);
+        NamedAlgorithm algo = getAlgorithm(args[0]);
+        NamedGraph graph = getGraph(args[1]);
         int maxDegree = getMaxDegree(args[2]);
         String runID = args[3];
         long timeLimitMillis = getTimeout(args[4]) * 1000;
