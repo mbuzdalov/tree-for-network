@@ -57,7 +57,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
         tree.addEdge(v1, v2);
 
         // Remove other edges incident to v1
-        int[] v1Other = new int[2];
+        int[] v1Other = new int[tree.degree(v1)];
         int n1Other = 0;
         for (int i = tree.degree(v1); --i >= 0; ) {
             int other = tree.getDestination(v1, i);
@@ -70,7 +70,7 @@ public final class EdgeSwitchMutation implements Mutation<EdgeSwitchMutation.Con
         }
 
         // Remove other edges incident to v2
-        int[] v2Other = new int[2];
+        int[] v2Other = new int[tree.degree(v2)];
         int n2Other = 0;
         for (int i = tree.degree(v2); --i >= 0; ) {
             int other = tree.getDestination(v2, i);
