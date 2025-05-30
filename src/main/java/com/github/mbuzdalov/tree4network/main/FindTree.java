@@ -59,7 +59,7 @@ public final class FindTree {
     }
 
     private static void usage() {
-        System.err.println("Usage: <algo> <file> <runID> <timeout> <fitness-log>, where:");
+        System.err.println("Usage: <algo> <file> <maxDegree> <runID> <timeout> <fitness-log>, where:");
         System.err.println("  <algo>         the name of the algorithm to run");
         System.err.println("  <file>         the dataset to run the algorithm on");
         System.err.println("  <maxDegree>    the maximum degree of a vertex in the answer (should be at least 2)");
