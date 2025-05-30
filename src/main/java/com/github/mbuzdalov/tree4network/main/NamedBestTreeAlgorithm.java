@@ -59,4 +59,13 @@ public record NamedBestTreeAlgorithm(String name, BestTreeAlgorithm algorithm) {
     public static List<NamedBestTreeAlgorithm> algorithms() {
         return algorithms;
     }
+
+    public static NamedBestTreeAlgorithm byName(String name) {
+        for (NamedBestTreeAlgorithm algo : algorithms) {
+            if (algo.name.equals(name)) {
+                return algo;
+            }
+        }
+        throw new IllegalArgumentException("Unknown algorithm name: '" + name + "'");
+    }
 }
