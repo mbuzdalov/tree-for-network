@@ -15,6 +15,8 @@ import java.util.random.RandomGenerator;
 import java.util.random.RandomGeneratorFactory;
 
 public final class FindBoundedGraph {
+    private static final boolean USE_SPECIAL_D2_SOLVER = true;
+
     // this is a main-only class
     private FindBoundedGraph() {}
 
@@ -45,6 +47,9 @@ public final class FindBoundedGraph {
             }
             int v1 = smallDegrees[i1];
             int v2 = smallDegrees[i2];
+            if (result.hasEdge(v1, v2)) {
+                continue;
+            }
             result.addEdge(v1, v2);
             if (result.degree(v2) == maxDegree) {
                 smallDegrees[i2] = smallDegrees[--nSmall];
@@ -384,7 +389,7 @@ public final class FindBoundedGraph {
 
             int nUnused = pairs.length;
             outer:
-            while (nUnused > 0) {
+            while (nUnused > 0 && !t1.shouldInterrupt()) {
                 int idx = random.nextInt(nUnused);
                 VertexPair curr = pairs[idx];
                 pairs[idx] = pairs[--nUnused];
@@ -426,7 +431,7 @@ public final class FindBoundedGraph {
                     nUnused = pairs.length;
                 } else if (nUnused == 0) {
                     nUnused = pairs.length;
-                    while (nUnused > 0) {
+                    while (nUnused > 0 && !t1.shouldInterrupt()) {
                         int i0 = random.nextInt(nUnused);
                         VertexPair curr0 = pairs[i0];
                         pairs[i0] = pairs[--nUnused];
@@ -467,11 +472,15 @@ public final class FindBoundedGraph {
     private static void solve2(Graph weights, String output, long timeLimit) throws IOException {
         Partitioner p = new Partitioner(weights);
         Graph[] components = p.getSubgraphs();
+        double[] compW = new double[components.length];
+        double weightSum = 0;
+        for (int i = 0; i < components.length; ++i) {
+            compW[i] = Math.pow(components[i].nVertices(), 2);
+            weightSum += compW[i];
+        }
         BoundedSimpleGraph[] results = new BoundedSimpleGraph[components.length];
         for (int i = 0; i < results.length; ++i) {
-            int gSize = components[i].nVertices();
-            int bigSize = weights.nVertices();
-            long projectedTimeLimit = Math.max(1000, (long) (timeLimit * Math.sqrt((double) (gSize) / bigSize)));
+            long projectedTimeLimit = Math.max(1000, (long) (timeLimit * compW[i] / weightSum));
             results[i] = solveChain(components[i], projectedTimeLimit);
         }
         BoundedSimpleGraph finalResult = p.recombineResults(results);
@@ -485,7 +494,7 @@ public final class FindBoundedGraph {
         String output = args[1];
         long timeLimit = Long.parseLong(args[2]) * 1000; // to milliseconds
 
-        if (input.maxDegree == 2) {
+        if (USE_SPECIAL_D2_SOLVER && input.maxDegree == 2) {
             solve2(input.graph(), output, timeLimit);
             return;
         }
@@ -573,6 +582,9 @@ public final class FindBoundedGraph {
                     results[subgraph] = graph;
                     bestConnected = graph;
                     System.out.println("    Update to " + componentBestResult);
+                }
+                if (input.maxDegree == 2) {
+                    break;
                 }
             }
 
