@@ -325,10 +325,171 @@ public final class FindBoundedGraph {
         }
     }
 
+    record VertexPair(int v1, int v2) {}
+
+    private static long chainCost(Graph weights, int[] inverse) {
+        long cost = 0;
+        int n = inverse.length;
+        for (int v1 = 0; v1 < n; ++v1) {
+            int d = weights.degree(v1);
+            int p1 = inverse[v1];
+            for (int j = 0; j < d; ++j) {
+                int v2 = weights.getDestination(v1, j);
+                int p2 = inverse[v2];
+                if (p1 < p2) {
+                    int d12 = Math.min(p2 - p1, n - (p2 - p1));
+                    cost += (long) weights.getWeight(v1, j) * d12;
+                }
+            }
+        }
+        return cost;
+    }
+
+    private static void reverse(int[] chain, int[] inverse, int p1, int p2) {
+        for (int l = p1 + 1, r = p2; l < r; ++l, --r) {
+            int tmp = chain[l];
+            chain[l] = chain[r];
+            chain[r] = tmp;
+            inverse[chain[l]] = l;
+            inverse[chain[r]] = r;
+        }
+    }
+
+    private static BoundedSimpleGraph solveChain(Graph weights, long timeLimit) {
+        int n = weights.nVertices();
+        BoundedSimpleGraph result = null;
+        long bestCost = -1;
+        RandomGenerator random = factory.create();
+        int[] chain = new int[n];
+        int[] inverse = new int[n];
+
+        VertexPair[] pairs = new VertexPair[n * (n - 1) / 2];
+        for (int i = 0, t = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j, ++t) {
+                pairs[t] = new VertexPair(i, j);
+            }
+        }
+
+        Timer t1 = Timer.newFixedTimer(System.currentTimeMillis(), timeLimit);
+        while (!t1.shouldInterrupt()) {
+            for (int i = 0; i < n; ++i) {
+                int j = random.nextInt(i + 1);
+                chain[i] = chain[j];
+                chain[j] = i;
+            }
+            for (int i = 0; i < n; ++i) {
+                inverse[chain[i]] = i;
+            }
+            long initCost = chainCost(weights, inverse);
+
+            int nUnused = pairs.length;
+            outer:
+            while (nUnused > 0) {
+                int idx = random.nextInt(nUnused);
+                VertexPair curr = pairs[idx];
+                pairs[idx] = pairs[--nUnused];
+                pairs[nUnused] = curr;
+                int p1 = curr.v1;
+                int p2 = curr.v2;
+                int v1 = chain[p1];
+                int v2 = chain[p2];
+
+                long newCost = initCost;
+
+                int d1 = weights.degree(v1);
+                for (int i = 0; i < d1; ++i) {
+                    int v3 = weights.getDestination(v1, i);
+                    if (v3 != v2) {
+                        int p3 = inverse[v3];
+                        int oldD = Math.min(Math.abs(p1 - p3), n - Math.abs(p1 - p3));
+                        int newD = Math.min(Math.abs(p2 - p3), n - Math.abs(p2 - p3));
+                        newCost += (long) weights.getWeight(v1, i) * (newD - oldD);
+                    }
+                }
+                int d2 = weights.degree(v2);
+                for (int i = 0; i < d2; ++i) {
+                    int v3 = weights.getDestination(v2, i);
+                    if (v3 != v1) {
+                        int p3 = inverse[v3];
+                        int oldD = Math.min(Math.abs(p2 - p3), n - Math.abs(p2 - p3));
+                        int newD = Math.min(Math.abs(p1 - p3), n - Math.abs(p1 - p3));
+                        newCost += (long) weights.getWeight(v2, i) * (newD - oldD);
+                    }
+                }
+
+                if (newCost < initCost) {
+                    initCost = newCost;
+                    chain[p1] = v2;
+                    chain[p2] = v1;
+                    inverse[v1] = p2;
+                    inverse[v2] = p1;
+                    nUnused = pairs.length;
+                } else if (nUnused == 0) {
+                    nUnused = pairs.length;
+                    while (nUnused > 0) {
+                        int i0 = random.nextInt(nUnused);
+                        VertexPair curr0 = pairs[i0];
+                        pairs[i0] = pairs[--nUnused];
+                        pairs[nUnused] = curr0;
+                        int q1 = curr0.v1;
+                        int q2 = curr0.v2;
+
+                        reverse(chain, inverse, q1, q2);
+                        long xCost = chainCost(weights, inverse);
+                        if (xCost < initCost) {
+                            initCost = xCost;
+                            nUnused = pairs.length;
+                            continue outer;
+                        } else {
+                            // exchange back
+                            reverse(chain, inverse, q1, q2);
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (bestCost == -1 || initCost < bestCost) {
+                System.out.println("Update from " + bestCost + " to " + initCost);
+                result = new BoundedSimpleGraph(n, 2);
+                for (int i = 0; i < n; ++i) {
+                    int v1 = chain[i];
+                    int v2 = chain[(i + 1) % n];
+                    result.addEdge(v1, v2);
+                }
+                bestCost = initCost;
+            }
+        }
+
+        return result;
+    }
+
+    private static void solve2(Graph weights, String output, long timeLimit) throws IOException {
+        Partitioner p = new Partitioner(weights);
+        Graph[] components = p.getSubgraphs();
+        BoundedSimpleGraph[] results = new BoundedSimpleGraph[components.length];
+        for (int i = 0; i < results.length; ++i) {
+            int gSize = components[i].nVertices();
+            int bigSize = weights.nVertices();
+            long projectedTimeLimit = Math.max(1000, (long) (timeLimit * Math.sqrt((double) (gSize) / bigSize)));
+            results[i] = solveChain(components[i], projectedTimeLimit);
+        }
+        BoundedSimpleGraph finalResult = p.recombineResults(results);
+        long finalCost = cost(weights, finalResult);
+        System.out.println("Final result has cost " + finalCost);
+        writeOutput(output, finalResult, finalCost);
+    }
+
     public static void main(String[] args) throws IOException {
         GraphWithDegree input = getGraph(args[0]);
         String output = args[1];
         long timeLimit = Long.parseLong(args[2]) * 1000; // to milliseconds
+
+        if (input.maxDegree == 2) {
+            solve2(input.graph(), output, timeLimit);
+            return;
+        }
+
         int iterations = Integer.parseInt(args[3]);
 
         List<NamedBestTreeAlgorithm> treeAlgos = input.maxDegree == 3 && input.graph.nVertices() <= 1024
@@ -347,6 +508,12 @@ public final class FindBoundedGraph {
 
         Partitioner p = new Partitioner(input.graph);
         Graph[] components = p.getSubgraphs();
+        double[] weights = new double[components.length];
+        double weightSum = 0;
+        for (int i = 0; i < components.length; ++i) {
+            weights[i] = Math.pow(components[i].nVertices(), 2);
+            weightSum += weights[i];
+        }
         BoundedSimpleGraph[] results = new BoundedSimpleGraph[components.length];
 
         long sumBestComponents = 0;
@@ -356,7 +523,7 @@ public final class FindBoundedGraph {
             Graph g = components[subgraph];
             int gSize = g.nVertices();
             int bigSize = input.graph.nVertices();
-            long projectedTimeLimit = Math.max(1000, (long) Math.ceil((double) (timeLimit) * gSize * gSize / bigSize / bigSize));
+            long projectedTimeLimit = Math.max(1000, (long) (timeLimit * weights[subgraph] / weightSum));
             System.out.println("  Component size is " + gSize + " of " + bigSize + ", using time limit " + projectedTimeLimit);
 
             long componentBestResult = Long.MAX_VALUE;
@@ -407,7 +574,6 @@ public final class FindBoundedGraph {
                     bestConnected = graph;
                     System.out.println("    Update to " + componentBestResult);
                 }
-
             }
 
             // Phase 3. Gradient descent
